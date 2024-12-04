@@ -2,15 +2,96 @@
 
 ---
 
+<!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+  <body>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input
+        type="text"
+        name="login_username"
+        placeholder="Enter Username"
+        required
+      />
+      <input
+        type="password"
+        name="login_password"
+        placeholder="Enter Password"
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
+
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <input
+        type="text"
+        name="signup_username"
+        autocomplete="off"
+        placeholder="Enter username"
+      />
+      <input
+        type="password"
+        name="signup_password"
+        placeholder="Enter password"
+      />
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <script>
+      import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+      const socket = io("http://localhost:3000");
+
+      const loginForm = document.querySelector("#loginForm") as HTMLFormElement;
+      const signupForm = document.querySelector(
+        "#signupForm"
+      ) as HTMLFormElement;
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+
+        const res = await fetch("http://localhost:3000/user/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // Send cookies
+          body: JSON.stringify({
+            username: formData.get("login_username"),
+            password: formData.get("login_password"),
+          }),
+        });
+
+        if (res.ok) {
+          alert("Login successful!");
+          window.location.href = "/profile";
+        } else {
+          alert("Login failed");
+        }
+      });
+
+      signupForm.addEventListener("submit", async (e): Promise<void> => {
+        e.preventDefault();
+        const formData = new FormData(signupForm);
+
+        const res = await fetch(`http://localhost:3000/user/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            username: formData.get("signup_username"),
+            password: formData.get("signup_password"),
+          }),
+        });
+        const data = await res.json();
+        console.log(data); //user
+      });
+    </script>
+  </body>
 </html>

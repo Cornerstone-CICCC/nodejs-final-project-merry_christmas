@@ -1,0 +1,55 @@
+---
+
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+  </head>
+  <body>
+    <h1>Your Profile</h1>
+    <button id="logout">Logout</button>
+
+    <div id="profileData">Loading...</div>
+
+    <script>
+      import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+      const socket = io("http://localhost:3000");
+
+      (document.getElementById("logout") as HTMLButtonElement).addEventListener(
+        "click",
+        async function () {
+          await fetch("http://localhost:3000/user/logout", {
+            method: "POST",
+            credentials: "include",
+          });
+          alert("Logged out");
+          window.location.href = "/";
+        }
+      );
+
+      async function loadProfile() {
+        const response = await fetch("http://localhost:3000/user/profile", {
+          credentials: "include", // Send cookies
+        });
+
+        console.log(response);
+
+        if (response.ok) {
+          const data = await response.json();
+          (document.getElementById("profileData") as HTMLDivElement).innerText =
+            `Welcome, ${data.username}`;
+        } else {
+          alert("Access denied. Please log in.");
+          window.location.href = "/";
+        }
+      }
+
+      // Load profile data on page load
+      loadProfile();
+    </script>
+  </body>
+</html>
