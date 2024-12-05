@@ -27,7 +27,7 @@ const userLogin = async (req: Request<{}, {}, User>, res: Response): Promise<voi
         return
     }
 
-    const token = generateToken({ _id: user._id, username: user.username });
+    const token = generateToken({ _id: user._id, email: user.email, username: user.username });
     await user.save();
 
     res.cookie('token', token, {
@@ -47,9 +47,9 @@ const userLogout = (req: Request, res: Response) => {
 }
 
 const userRegister = async (req: Request<{}, {}, User>, res: Response): Promise<void> => {
-    const { username, password } = req.body
-    if (!username || !password) {
-        res.status(404).json({ message: 'Missing username or password' })
+    const { username, email, password } = req.body
+    if (!username || !password || !email) {
+        res.status(404).json({ message: 'Missing info' })
         return
     }
     const checkUser = await UserModel.findOne({ username })
@@ -57,9 +57,16 @@ const userRegister = async (req: Request<{}, {}, User>, res: Response): Promise<
         res.status(409).json({ message: "Username taken" })
         return
     }
+
+    const checkEmail = await UserModel.findOne({ email })
+    if (checkEmail) {
+        res.status(409).json({ message: "Email taken" })
+        return
+    }
     const hashedPassword = await bcrypt.hash(password, 12)
     const newUser = new UserModel({
         username,
+        email,
         password: hashedPassword,
     });
 

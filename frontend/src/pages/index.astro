@@ -36,6 +36,12 @@
         placeholder="Enter username"
       />
       <input
+        type="text"
+        name="signup_email"
+        autocomplete="off"
+        placeholder="Enter Your Email"
+      />
+      <input
         type="password"
         name="signup_password"
         placeholder="Enter password"
@@ -59,7 +65,7 @@
         const res = await fetch("http://localhost:3000/user/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include", // Send cookies
+          credentials: "include",
           body: JSON.stringify({
             username: formData.get("login_username"),
             password: formData.get("login_password"),
@@ -68,7 +74,7 @@
 
         if (res.ok) {
           alert("Login successful!");
-          window.location.href = "/profile";
+          window.location.href = "/my_profile";
         } else {
           alert("Login failed");
         }
@@ -86,6 +92,7 @@
           credentials: "include",
           body: JSON.stringify({
             username: formData.get("signup_username"),
+            email: formData.get("signup_email"),
             password: formData.get("signup_password"),
           }),
         });

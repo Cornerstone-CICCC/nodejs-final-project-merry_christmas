@@ -31,7 +31,7 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(403).json({ message: 'Passwords do not match' });
         return;
     }
-    const token = (0, auth_1.generateToken)({ _id: user._id, username: user.username });
+    const token = (0, auth_1.generateToken)({ _id: user._id, email: user.email, username: user.username });
     yield user.save();
     res.cookie('token', token, {
         httpOnly: true,
@@ -47,9 +47,9 @@ const userLogout = (req, res) => {
     });
 };
 const userRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password } = req.body;
-    if (!username || !password) {
-        res.status(404).json({ message: 'Missing username or password' });
+    const { username, email, password } = req.body;
+    if (!username || !password || !email) {
+        res.status(404).json({ message: 'Missing info' });
         return;
     }
     const checkUser = yield user_model_1.UserModel.findOne({ username });
@@ -57,9 +57,15 @@ const userRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(409).json({ message: "Username taken" });
         return;
     }
+    const checkEmail = yield user_model_1.UserModel.findOne({ email });
+    if (checkEmail) {
+        res.status(409).json({ message: "Email taken" });
+        return;
+    }
     const hashedPassword = yield bcrypt_1.default.hash(password, 12);
     const newUser = new user_model_1.UserModel({
         username,
+        email,
         password: hashedPassword,
     });
     yield newUser.save();

@@ -5,7 +5,8 @@ import cors from 'cors'
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
 import userRouter from "./routes/user.routes";
-import socket from "./sockets/tree.socket";
+import messageRouter from "./routes/message.route";
+import socket from "./sockets/message.socket";
 import cookieParser from "cookie-parser";
 dotenv.config()
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }))
 
 //Routes
 app.use('/user', userRouter)
+app.use('/api/msTree', messageRouter)
 
 
 

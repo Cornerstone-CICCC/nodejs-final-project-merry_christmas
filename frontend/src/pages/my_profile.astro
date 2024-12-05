@@ -1,0 +1,140 @@
+---
+
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+  </head>
+  <body>
+    <!--Head off container  -->
+    <div class="container hidden">
+      <div class="myProfile">
+        <div id="profileData">Loading...</div>
+        <button id="logout">Logout</button>
+      </div>
+
+      <nav>
+        <!-- Tree Btns-->
+        <button treeData="tree1"> tree1</button>
+        <button treeData="tree2"> tree2</button>
+        <button treeData="tree3"> tree3</button>
+        <button treeData="tree4"> tree4</button>
+      </nav>
+
+      <!-- Show selected tree Below is template-->
+      <div class="tree" treeData="tree1">
+        <button> decorate me!</button>
+        <ul id="messageList"></ul>
+      </div>
+    </div>
+    <!--End off container  -->
+
+    <!-- Popup Modules -->
+    <div class="createTreeModule module">
+      <button class="closeModule"> X </button>
+      <form>
+        <input type="text" name="treeName" placeholder="my Tree" />
+        <button id="createTreeComplete">OK!</button>
+      </form>
+    </div>
+
+    <div class="addMessageModule module">
+      <button class="closeModule"> X </button>
+      <form>
+        <input type="text" name="editMessage" placeholder="Enter Message" />
+        <button id="addMessageComplete">OK!</button>
+      </form>
+    </div>
+
+    <div class="showMessageModule module">
+      <button class="closeModule"> X </button>
+      <div id="showMessage">
+        <h6>User:</h6>
+        <p>Message:</p>
+        <button id="edit">Edit Message</button>
+        <button id="delete">Delete</button>
+      </div>
+      <form id="editMessage">
+        <input type="text" name="editMessage" placeholder="Enter Message" />
+        <button id="editMessageComplete">OK!</button>
+      </form>
+    </div>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      .hidden {
+        display: none;
+      }
+
+      .module {
+        border: 1px solid black;
+      }
+
+      #messageList {
+        display: block;
+        width: 500px;
+        height: 300px;
+        background-color: pink;
+      }
+    </style>
+
+    <script>
+      import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+      const socket = io("http://localhost:3000");
+
+      //Logout Button
+      (document.getElementById("logout") as HTMLButtonElement).addEventListener(
+        "click",
+        async function () {
+          await fetch("http://localhost:3000/user/logout", {
+            method: "POST",
+            credentials: "include",
+          });
+          alert("Logged out");
+          window.location.href = "/";
+        }
+      );
+
+      //load My Profile
+      const loadProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:3000/user/profile", {
+            method: "GET",
+            credentials: "include", // Send cookies
+          });
+
+          console.log(res);
+
+          if (!res.ok) {
+            alert("Access denied. Please log in.");
+            window.location.href = "/";
+          }
+
+          const data = await res.json();
+
+          const profileData = document.getElementById(
+            "profileData"
+          ) as HTMLDivElement;
+          profileData.innerText = `Welcome, ${data.username} (${data.email})`;
+          document.querySelector(".container").classList.remove("hidden");
+
+          return data;
+        } catch (err) {
+          console.log(`fetch error:${err}`);
+        }
+      };
+
+      //Tree Btns
+      documents.querySelectorAll();
+
+      // Load profile data on page load
+      loadProfile();
+    </script>
+  </body>
+</html>

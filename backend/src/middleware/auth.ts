@@ -9,6 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 interface UserPayload {
     _id: Types.ObjectId;
     username: string;
+    email: string;
 }
 
 export function generateToken(user: UserPayload): string {

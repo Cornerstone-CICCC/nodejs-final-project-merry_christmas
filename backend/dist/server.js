@@ -10,7 +10,8 @@ const cors_1 = __importDefault(require("cors"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
-const tree_socket_1 = __importDefault(require("./sockets/tree.socket"));
+const message_route_1 = __importDefault(require("./routes/message.route"));
+const message_socket_1 = __importDefault(require("./sockets/message.socket"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 dotenv_1.default.config();
 //create
@@ -26,6 +27,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 //Routes
 app.use('/user', user_routes_1.default);
+app.use('/api/msTree', message_route_1.default);
 // Create HTTP server and attach Socket.IO
 const server = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(server, {
@@ -41,7 +43,7 @@ mongoose_1.default
     .connect(MONGO_URI, { dbName: "christmas_tree" })
     .then(() => {
     console.log('connect to MongoDB database');
-    (0, tree_socket_1.default)(io);
+    (0, message_socket_1.default)(io);
     const PORT = process.env.PORT || 3000;
     server.listen(PORT, () => {
         console.log(`Server is running on PORT:${PORT}`);
