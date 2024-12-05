@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const setupTreeSocket = (io) => {
+const socket = (io) => {
     io.on('connection', (socket) => {
         //connect
         console.log(`User Connected:${socket.id}`);
@@ -10,4 +10,4 @@ const setupTreeSocket = (io) => {
         });
     });
 };
-exports.default = setupTreeSocket;
+exports.default = socket;
