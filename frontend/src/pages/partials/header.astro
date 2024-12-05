@@ -1,0 +1,140 @@
+<header>
+    <div class="logo">
+        <img src="assets/logo.png" alt="logo">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <div class="login-background">
+                <li><a class="login" href="/login">Login</a></li>
+            </div>
+            <button class="close-burger"></button>
+        </ul>
+        <button class="burger-menu"></button>
+    </nav>
+</header>
+
+<script>
+    //burger menu
+    const burgerMenu = document.querySelector(".burger-menu") as HTMLButtonElement
+    const navUl = document.querySelector("nav ul") as HTMLUListElement
+    const closeBurger = document.querySelector(".close-burger") as HTMLButtonElement
+    burgerMenu.addEventListener("click", () => {
+        burgerMenu.style.display = "none"
+        navUl.style.right = "200px"
+    })
+    closeBurger.addEventListener("click", () => {
+        burgerMenu.style.display = "block"
+        navUl.style.right = "-200px"
+    })
+</script>
+
+<style>
+    *{
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+	}
+	/* Nav Styling */
+	.logo img{
+		max-width: 70px;
+	}
+	header{
+		padding: 0 10px;		
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.burger-menu{
+		background-image: url(assets/burgermenu.png);
+		height: 30px;
+		width: 30px;
+		border: none;
+		background-color: transparent;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center;
+	}
+	.close-burger{
+		background-image: url(assets/close.png);
+		height: 30px;
+		width: 30px;
+		border: none;
+		background-color: transparent;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center;
+		position: absolute;
+		top: 10px;
+		left: 10px;
+	}
+	nav{
+		display: flex;
+		align-items: center;
+		position: relative;
+	}
+	nav ul {
+		z-index: 200;
+		list-style-type: none;
+		display: flex;
+		flex-direction: column;
+		top: 0;
+		gap: 40px;
+		right: -200px;
+		position: fixed;
+		background-color: #dbe5df;
+		width: 200px;
+		height: 100vh;
+		padding: 80px 0 0 50px;
+        transition: all 0.5s ease-in-out;
+	}
+	a{
+		text-decoration: none;
+		color: #0D6232;
+		font-weight: bold;
+		font-family: "Inter", sans-serif;
+	}
+    @media only screen and (min-width: 768px){
+		.logo img{
+			max-width: 100px;
+		}
+		header{
+			padding: 0 60px;
+		}
+        nav ul{
+			position: static;
+			flex-direction: row; 
+			align-items: center;
+			background-color: transparent;
+			height: 40px;
+			padding: 0;
+			width: auto;
+		}
+		.close-burger{
+			display: none; 
+		}
+		.burger-menu{
+			display: none;
+		}
+		.login{
+			color: white; 
+			background: #C12D2D;
+			font-weight: bold; 
+			border-radius: 40px;
+		}
+		.login-background{
+			width: 170px;
+			height: 42px;
+			background: #C12D2D;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			border-radius: 40px;
+		}
+		.login-background:hover{
+			cursor: pointer;
+		}
+    }
+</style>

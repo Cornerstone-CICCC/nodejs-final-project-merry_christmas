@@ -1,0 +1,70 @@
+---
+
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Profile</title>
+    </head>
+    <body>
+        <div class="user-profile">
+            <h1>Hello! $user}</h1>
+            <div class="cover"></div>
+            <button>Tree 1</button>
+            <button>Tree 2</button>
+            <button>Tree 3</button>
+            <button>Tree 4</button>
+            
+        </div>
+        <div class="user-tree hidden">
+            <img src="assets/tree.png" alt="christmas tree">
+        </div>
+    </body>
+</html>
+
+<style>
+    .hidden{
+        display: none;
+    }
+    *{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    .user-profile{
+        font-family: "Inter", sans-serif;
+    }
+    h1, h4{
+        text-align: center;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        color: #0D6232;
+    }
+    button{
+        width: 170px;
+        height: 42px;
+        background: #C12D2D;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 40px;
+        border: none;
+        color: white;
+        margin: auto;
+        font-weight: bold;
+    }
+    .cover{
+        margin: auto;
+        width: 350px;
+        height: 200px;
+        border-radius: 10px;
+        background-image: url(assets/snowman.jpg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+</style>
