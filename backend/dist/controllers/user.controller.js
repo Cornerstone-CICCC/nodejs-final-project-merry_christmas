@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = require("../models/user.model");
 const auth_1 = require("../middleware/auth");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const uuid_1 = require("uuid");
 const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -32,13 +31,13 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(403).json({ message: 'Passwords do not match' });
         return;
     }
-    const token = (0, auth_1.generateToken)({ userId: user.userId, username: user.username });
+    const token = (0, auth_1.generateToken)({ _id: user._id, username: user.username });
     yield user.save();
     res.cookie('token', token, {
         httpOnly: true,
         maxAge: 60 * 60 * 1000, // 1 hour
     });
-    res.json({ message: 'Login successful', user: { userId: user.userId, username: user.username } });
+    res.json({ message: 'Login successful', user: { username: user.username } });
     return;
 });
 const userLogout = (req, res) => {
@@ -60,7 +59,6 @@ const userRegister = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     const hashedPassword = yield bcrypt_1.default.hash(password, 12);
     const newUser = new user_model_1.UserModel({
-        userId: (0, uuid_1.v4)(),
         username,
         password: hashedPassword,
     });
@@ -75,12 +73,13 @@ const userProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return;
     }
     const decoded = (0, auth_1.verifyToken)(token);
-    const myUserId = decoded === null || decoded === void 0 ? void 0 : decoded.id;
-    if (!myUserId) {
+    console.log(decoded);
+    const userId = decoded === null || decoded === void 0 ? void 0 : decoded._id;
+    if (!userId) {
         res.status(401).json({ message: "Unauthorized: Invalid token" });
         return;
     }
-    const user = yield user_model_1.UserModel.findById(myUserId).select("-password");
+    const user = yield user_model_1.UserModel.findById(userId).select("-password");
     if (!user) {
         res.status(404).json({ message: "User not found" });
         return;
@@ -88,7 +87,6 @@ const userProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.json(user);
 });
 exports.default = {
-    // getUserInfo,
     userRegister,
     userLogin,
     userLogout,

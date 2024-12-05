@@ -31,22 +31,30 @@
         }
       );
 
-      async function loadProfile() {
-        const response = await fetch("http://localhost:3000/user/profile", {
-          credentials: "include", // Send cookies
-        });
+      const loadProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:3000/user/profile", {
+            method: "GET",
+            credentials: "include", // Send cookies
+          });
 
-        console.log(response);
+          console.log(res);
 
-        if (response.ok) {
-          const data = await response.json();
-          (document.getElementById("profileData") as HTMLDivElement).innerText =
-            `Welcome, ${data.username}`;
-        } else {
-          alert("Access denied. Please log in.");
-          window.location.href = "/";
+          if (!res.ok) {
+            alert("Access denied. Please log in.");
+            window.location.href = "/";
+          }
+
+          const data = await res.json();
+          const profileData = document.getElementById(
+            "profileData"
+          ) as HTMLDivElement;
+          profileData.innerText = `Welcome, ${data.username}`;
+          return data;
+        } catch (err) {
+          console.log(`fetch error:${err}`);
         }
-      }
+      };
 
       // Load profile data on page load
       loadProfile();

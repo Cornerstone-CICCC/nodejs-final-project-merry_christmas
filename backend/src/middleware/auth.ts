@@ -1,13 +1,13 @@
 // src/auth.ts
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
+import { Types } from 'mongoose';
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 
 interface UserPayload {
-    userId: string;
+    _id: Types.ObjectId;
     username: string;
 }
 

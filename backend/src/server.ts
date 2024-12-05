@@ -5,7 +5,7 @@ import cors from 'cors'
 import mongoose from "mongoose";
 import dotenv from 'dotenv'
 import userRouter from "./routes/user.routes";
-import treeSocket from "./sockets/tree.socket";
+import socket from "./sockets/tree.socket";
 import cookieParser from "cookie-parser";
 dotenv.config()
 
@@ -47,7 +47,7 @@ mongoose
     .connect(MONGO_URI, { dbName: "christmas_tree" })
     .then(() => {
         console.log('connect to MongoDB database')
-        treeSocket(io)
+        socket(io)
 
         const PORT = process.env.PORT || 3000
         server.listen(PORT, () => {

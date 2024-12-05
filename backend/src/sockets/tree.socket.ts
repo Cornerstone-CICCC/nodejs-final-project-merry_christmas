@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 
 
-const setupTreeSocket = (io: Server) => {
+const socket = (io: Server) => {
 
     io.on('connection', (socket: Socket) => {
         //connect
@@ -17,4 +17,4 @@ const setupTreeSocket = (io: Server) => {
     })
 }
 
-export default setupTreeSocket
+export default socket
