@@ -13,14 +13,39 @@
         <div class="container">
             <form>
                 <img class="logo" src="assets/logo.png" alt="logo">
-                <input type="text" name="username" id="username">
-                <input type="text" name="password" id="password">
+                <input type="text" name="username" id="username" placeholder="Username">
+                <input type="text" name="password" id="password" placeholder="Password">
                 <button type="submit">Log In</button>
             </form>
             <p>Don't have an account?<a href="/signup">Sign up</a></p>
         </div>
 	</body>
 	<script>
+        const form = document.querySelector("form") as HTMLFormElement
+
+        form.addEventListener("submit", async(e) => {
+            e.preventDefault()
+            const formData = new FormData(form)
+
+            const username = formData.get("username")
+            const password = formData.get("password")
+
+            const res = await fetch(`http://localhost:3000/user/login`, {
+            method: "POST", 
+                headers: {
+					"Content-Type": 'application/json',
+				},
+				body: JSON.stringify({
+					"username": username,
+					"password": password
+				}),
+				credentials: 'include'
+            })
+            // const data = await res.json()
+            if(res.ok){
+                window.location.href = "/profile"
+            }
+        })
 	</script>
 </html>
 <style>
