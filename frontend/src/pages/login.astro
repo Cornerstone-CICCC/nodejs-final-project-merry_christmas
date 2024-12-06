@@ -1,0 +1,70 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Login</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:wght@200..1000&display=swap" rel="stylesheet">
+	</head>
+	<body>
+        <div class="container">
+            <form>
+                <img class="logo" src="assets/logo.png" alt="logo">
+                <input type="text" name="username" id="username">
+                <input type="text" name="password" id="password">
+                <button type="submit">Log In</button>
+            </form>
+            <p>Don't have an account?<a href="/signup">Sign up</a></p>
+        </div>
+	</body>
+	<script>
+	</script>
+</html>
+<style>
+    .container{
+        font-family: "Inter", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    img{
+        max-width: 200px;
+    }
+    input{
+        text-align: center;
+        font-size: 16px;
+        width: 240px; 
+        height: 44px; 
+        border-radius: 40px;
+        border: 2px solid #C12D2D;
+        color: rgb(164, 164, 164);
+    }
+    button{
+        height: 45px;
+		width: 240px;
+		border-radius: 40px;
+		border: none; 
+		background-color: #C12D2D;
+		color: white; 
+		font-size: 16px;
+		font-weight: bold;
+    }
+    p{
+        color: #898585;
+    }
+    p a{
+        font-weight: bold;
+        text-decoration: underline;
+    }
+</style>
