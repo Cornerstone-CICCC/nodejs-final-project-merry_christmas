@@ -1,0 +1,92 @@
+---
+import Header from "./partials/header.astro"
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Home</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:wght@200..1000&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<Header/>
+		<div class="container">
+			<div class="info">
+				<h1>Create your own Christmas Tree</h1>
+				<p>Leave messages and decorate with friends!</p>
+				<a href="/login"><button class="signup">Let's go!</button></a>
+			</div>
+			<div class="images">
+				<img class="tree" src="assets/tree.png" alt="christmas tree">
+				<img class="santa" src="assets/santa.png" alt="chibi santa">
+			</div>
+		</div>
+	</body>
+	<script>
+
+		const loginButton = document.querySelector(".login-background") as HTMLDivElement
+
+		loginButton.addEventListener("click", () => {
+			window.location.href = "/login"
+		})
+	</script>
+</html>
+
+<style>
+	.images{
+		position: relative;
+	}
+	.santa{
+		position: absolute;
+		max-width: 160px;
+		bottom: 10px;
+		right: 20px;
+	}
+	.tree{
+		max-width: 375px;
+	}
+	.info{
+		font-family: "Inter", sans-serif;
+		width: 290px;
+		margin: auto;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 10px;
+	}
+	h1{
+		color: #0D6232;
+	}
+	.signup{
+		height: 45px;
+		width: 240px;
+		border-radius: 40px;
+		border: none; 
+		background-color: #C12D2D;
+		color: white; 
+		font-size: 16px;
+		font-weight: bold;
+	}
+	.signup:hover{
+		cursor: pointer;
+	}
+	@media only screen and (min-width: 768px){
+		.container{
+			display: flex;
+			align-items: center;
+			justify-content: space-evenly;
+		}
+		.info{
+			width: 350px;
+			margin: 0;
+		}
+		h1{
+			text-align: center;
+		}
+	}
+</style>
