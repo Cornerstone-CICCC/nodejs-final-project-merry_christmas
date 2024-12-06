@@ -13,8 +13,8 @@
         <div class="container">
             <form>
                 <img src="assets/logo.png" alt="logo">
+                <input type="email" name="email" id="email" placeholder="Email">
                 <input type="text" name="username" id="username" placeholder="Username">
-                <input type="text" name="name" id="name" placeholder="Name">
                 <input type="password" name="password" id="password" placeholder="Password">
                 <button type="submit">Sign Up</button>
             </form>
@@ -22,6 +22,28 @@
         </div>
 	</body>
 	<script>
+        const form = document.querySelector("form") as HTMLFormElement
+
+        form.addEventListener("submit", async(e) => {
+            e.preventDefault()
+            const formData = new FormData(form)
+            const res = await fetch(`http://localhost:3000/user/register`, {
+                method: "POST", 
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: formData.get("email"),
+                    username: formData.get('username'),
+                    password: formData.get('password')
+                })
+            })
+            const data = await res.json()
+            console.log(data)
+            if(res.ok){
+                window.location.href = "/login"
+            }
+        })
 	</script>
 </html>
 
