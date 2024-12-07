@@ -10,28 +10,199 @@
         <title>Profile</title>
     </head>
     <body>
-        <div class="user-profile">
-            <h1>Hello, $user!</h1>
-            <div class="cover"></div>
-            <h4>Enter any room and decorate!</h4>
-            <button class="btn-room" data-room="Tree 1">Tree 1</button>
-            <button class="btn-room" data-room="Tree 2">Tree 2</button>
-            <button class="btn-room" data-room="Tree 3">Tree 3</button>
-            <button class="btn-room" data-room="Tree 4">Tree 4</button>
-            
-
+        <div class="loading">
+            <h1 class="loader"></h1>
         </div>
-        <div class="user-tree hidden">
-            <img src="assets/tree.png" alt="christmas tree">
+        <div class="container hidden">
+            <button class="logout-btn">logout</button>
+            <div class="user-profile ">
+                <h1 id="profileTitle">Hello, $user!</h1>
+                <div class="cover"></div>
+                <h4>Enter any room and decorate!</h4>
+                <button class="btn-room" data-room="Tree 1">Tree 1</button>
+                <button class="btn-room" data-room="Tree 2">Tree 2</button>
+                <button class="btn-room" data-room="Tree 3">Tree 3</button>
+                <button class="btn-room" data-room="Tree 4">Tree 4</button>
+                
+
+            </div>
+            <div class="tree hidden">
+                <div class="tree-content">
+                    <img src="assets/tree.png" alt="christmas tree">
+                    <div class="messages">
+
+                    </div>
+                </div>
+                <button class="add-msg">Decorate Me</button>
+                <button class="back2profile">Back to my profile</button>
+                <div class="overlay hidden">
+                    <div class="modal">
+                        <button class="close-btn">X</button>
+                        <form class="msg-form" action="">
+                            <textarea required class="message" id="message" placeholder="Your message goes here"></textarea>
+                            <button class="submit-btn" type="submit">Decorate!</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
     <script>
+        import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+        const socket = io('http://localhost:3000')
 
+        const container = document.querySelector(".container") as HTMLDivElement
+        const loading = document.querySelector(".loading") as HTMLHeadingElement
+        const closeBtn = document.querySelector(".close-btn") as HTMLButtonElement
+        const addMsg = document.querySelector(".add-msg") as HTMLButtonElement
+        const logoutBtn = document.querySelector(".logout-btn") as HTMLButtonElement
+        const treeButtons = document.querySelectorAll(".btn-room") 
+        const messages = document.querySelector(".messages") as HTMLDivElement
+        const messageForm = document.querySelector(".msg-form") as HTMLFormElement
+        const messageInput = document.querySelector(".message") as HTMLTextAreaElement
+        const overlay = document.querySelector(".overlay") as HTMLDivElement
+        const profileTitle = document.querySelector("#profileTitle") as HTMLHeadingElement
+        const tree = document.querySelector(".tree") as HTMLDivElement
+        const userProfile = document.querySelector(".user-profile") as HTMLDivElement
+        const backToProfile = document.querySelector(".back2profile") as HTMLButtonElement
 
+        //Trees and rooms         
+        let currentTree
+        //handle room(tree) buttons 
+        treeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                messages.innerHTML = ''
+                tree.classList.remove("hidden")
+                userProfile.classList.add("hidden")
+
+                const newTree = btn.getAttribute('data-room')
+                // console.log(newTree)
+                currentTree = newTree 
+                buildTree(currentTree)
+            })
+        }) 
+        //cannot fetch current tree here 
+
+        //fetch user info 
+        const fetchUserInfo = async () => {
+            const res = await fetch(`http://localhost:3000/user/profile`, {
+                credentials: "include"
+            })
+            const data = await res.json()
+            return data
+        }
+
+        const fetchMessages = async () => {
+
+        }
+        const buildTree = async(tree: string) => {
+            const userInfo = await fetchUserInfo()
+
+            messages.innerHTML = ``
+        }
+
+        //send message to server
+        messageForm.addEventListener("submit", async(e) => {
+            e.preventDefault()
+            const message  = messageInput.value
+            const data = await fetchUserInfo()
+            console.log(data._id)
+            socket.emit("addMessage", {
+                fromUserId: data._id,
+                message: message,
+                tree: 'currentTree'
+            })
+            messageInput.value = ''
+        })
+
+        //close modal
+        closeBtn.addEventListener("click", () => {
+            overlay.classList.add("hidden")
+        })
+        //open modal 
+        addMsg.addEventListener("click", () => {
+            overlay.classList.remove("hidden")
+        })
+
+        //logout user 
+        logoutBtn.addEventListener("click", async() => {
+            await fetch(`http://localhost:3000/user/logout`, {
+                credentials: "include"
+            })
+            window.location.href = '/'
+        })
+
+        //back to my profile button 
+        backToProfile.addEventListener("click", () => {
+            tree.classList.add("hidden")
+            userProfile.classList.remove("hidden")
+        })
+
+        //load profile 
+        const loadProfile = async (): Promise<void> => {
+            const res = await fetch(`http://localhost:3000/user/profile`, {
+                credentials: "include"
+            })
+            const data = await res.json()
+            if (res.ok) {
+                profileTitle.innerText = `Hello, ${data.username} `
+                container.classList.remove("hidden")
+                loading.classList.add("hidden")
+            }else{
+                alert("Access denied. Please log in.");
+                window.location.href = "/"
+            }
+        }
+        loadProfile()
     </script>
 </html>
 
 <style>
+    .tree-content{
+        position: relative;
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+    }
+    img{
+        max-width: 350px;
+    }
+    .add-msg{
+        position: absolute; 
+        bottom: 0; 
+        right: 0;
+    }
+    .overlay{
+        position: fixed; 
+        top: 0;
+        left: 0;
+        display: grid;
+        place-items: center;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0,0,0,.8);
+        z-index: 1000000000;
+    }
+
+    .modal {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        gap: 1rem;
+        max-width: 350px;
+        width: 100%;
+        padding: 2rem;
+        background-color: white;
+        text-align: justify;
+        border-radius: 10px;
+    }
+    textarea{
+        width: 100%;
+        height: 200px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #C12D2D;
+    }
     .hidden{
         display: none;
     }
@@ -48,6 +219,9 @@
         margin-bottom: 20px;
         margin-top: 20px;
         color: #0D6232;
+    }
+    .submit-btn:hover{
+        cursor: pointer;
     }
     button{
         width: 170px;
@@ -72,5 +246,29 @@
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
+    }
+    
+    .loader {
+        position: absolute;
+        left: 0; 
+        right: 0; 
+        margin-inline: auto; 
+        width: fit-content;
+        width: 60px;
+        color:#0D6232;
+        aspect-ratio: 2;
+        --_g: no-repeat radial-gradient(circle closest-side,#0D6232 90%,#0000);
+        background: 
+            var(--_g) 0%   50%,
+            var(--_g) 50%  50%,
+            var(--_g) 100% 50%;
+        background-size: calc(100%/3) 50%;
+        animation: l3 1s infinite linear;
+    }
+    @keyframes l3 {
+        20%{background-position:0%   0%, 50%  50%,100%  50%}
+        40%{background-position:0% 100%, 50%   0%,100%  50%}
+        60%{background-position:0%  50%, 50% 100%,100%   0%}
+        80%{background-position:0%  50%, 50%  50%,100% 100%}
     }
 </style>
