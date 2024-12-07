@@ -1,5 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { MessageModel } from "../models/message.model";
+import { UserModel } from "../models/user.model";
+import mongoose from "mongoose";
 
 
 const socket = (io: Server) => {
@@ -9,12 +11,23 @@ const socket = (io: Server) => {
         console.log(`User Connected:${socket.id}`)
 
         //addMessage event
-        socket.on('addMessage', async (data) => {
+        socket.on('sendMessage', async (data) => {
             const { fromUserId, message, tree } = data
+
             try {
-                const newMessage = new MessageModel({ fromUserId, message, tree })
-                await newMessage.save()
-                io.emit('newMessage', newMessage)
+                const userId = new mongoose.Types.ObjectId(fromUserId);
+                const user = await UserModel.findById(userId).select('username');
+                if (!user) {
+                    console.error('User not found');
+                    return;
+                }
+                console.log(`found User! ${user}`)
+                const fromUsername = user.username
+
+                const showMessage = new MessageModel({ fromUsername, message, tree })
+                await showMessage.save()
+                io.emit('newMessage', showMessage)
+
             } catch (error) {
                 console.log('Error saving Message', error)
             }

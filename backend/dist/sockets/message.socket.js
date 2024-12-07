@@ -8,8 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const message_model_1 = require("../models/message.model");
+const user_model_1 = require("../models/user.model");
+const mongoose_1 = __importDefault(require("mongoose"));
 const socket = (io) => {
     io.on('connection', (socket) => {
         //connect
@@ -18,9 +23,17 @@ const socket = (io) => {
         socket.on('addMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
             const { fromUserId, message, tree } = data;
             try {
-                const newMessage = new message_model_1.MessageModel({ fromUserId, message, tree });
-                yield newMessage.save();
-                io.emit('newMessage', newMessage);
+                const userId = new mongoose_1.default.Types.ObjectId(fromUserId);
+                const user = yield user_model_1.UserModel.findById(userId).select('username');
+                if (!user) {
+                    console.error('User not found');
+                    return;
+                }
+                console.log(`found User! ${user}`);
+                const fromUsername = user.username;
+                const showMessage = new message_model_1.MessageModel({ fromUsername, message, tree });
+                yield showMessage.save();
+                io.emit('newMessage', showMessage);
             }
             catch (error) {
                 console.log('Error saving Message', error);

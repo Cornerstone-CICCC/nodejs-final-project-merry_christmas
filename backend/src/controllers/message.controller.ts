@@ -15,11 +15,7 @@ const getMessagesByTree = async (req: Request<{ tree: string }>, res: Response) 
     try {
         const selectedTree = req.params.tree
         const selectedMessages = await MessageModel.find({ tree: selectedTree })
-        // if (!selectedTree.length
-        // ) {
-        //     res.status(404).json({ error: "No message fround from the selected room." })
-        //     return
-        // }
+
         res.status(200).json(selectedMessages)
     } catch (error) {
         res.status(500).json({ error: `Error to fetch message from the selected Tree.` })

@@ -23,11 +23,6 @@ const getMessagesByTree = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const selectedTree = req.params.tree;
         const selectedMessages = yield message_model_1.MessageModel.find({ tree: selectedTree });
-        // if (!selectedTree.length
-        // ) {
-        //     res.status(404).json({ error: "No message fround from the selected room." })
-        //     return
-        // }
         res.status(200).json(selectedMessages);
     }
     catch (error) {

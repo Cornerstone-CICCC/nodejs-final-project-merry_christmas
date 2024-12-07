@@ -3,74 +3,206 @@
 ---
 
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
-        <title>Profile</title>
-    </head>
-    <body>
-        <div class="user-profile">
-            <h1>Hello, $user!</h1>
-            <div class="cover"></div>
-            <h4>Enter any room and decorate!</h4>
-            <button class="btn-room" data-room="Tree 1">Tree 1</button>
-            <button class="btn-room" data-room="Tree 2">Tree 2</button>
-            <button class="btn-room" data-room="Tree 3">Tree 3</button>
-            <button class="btn-room" data-room="Tree 4">Tree 4</button>
-            
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Profile</title>
+  </head>
+  <body>
+    <div class="user-profile">
+      <h1 id="profileTitle">Hello, $user!</h1>
+      <div class="cover"></div>
+      <h4>Enter any room and decorate!</h4>
+      <button class="btn-room" data-room="Tree 1">Tree 1</button>
+      <button class="btn-room" data-room="Tree 2">Tree 2</button>
+      <button class="btn-room" data-room="Tree 3">Tree 3</button>
+      <button class="btn-room" data-room="Tree 4">Tree 4</button>
+    </div>
+    <div class="user-tree hidden">
+      <img src="assets/tree.png" alt="christmas tree" />
+      <button id="addMessage">Decorate me</button>
+      <ul id="messageList"></ul>
+    </div>
 
-        </div>
-        <div class="user-tree hidden">
-            <img src="assets/tree.png" alt="christmas tree">
-        </div>
-    </body>
-    <script>
+    <div class="addMessageModule hidden">
+      <form id="messageForm">
+        <input
+          id="messageInput"
+          type="text"
+          name="messageInput"
+          placeholder="Hello~ Merry Christmas"
+          required
+        />
+        <button type="submit">Decorate!</button>
+      </form>
+    </div>
 
+    <script type="module">
+      import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+      const socket = io("http://localhost:3000");
+      let userProfileData;
 
+      //load My Profile
+      const loadProfile = async () => {
+        try {
+          const res = await fetch("http://localhost:3000/user/profile", {
+            method: "GET",
+            credentials: "include", // Send cookies
+          });
+
+          console.log(res);
+          if (!res.ok) {
+            alert("Access denied. Please log in.");
+            window.location.href = "/";
+          }
+
+          const data = await res.json();
+          userProfileData = data;
+          console.log(userProfileData);
+
+          const profileTitle = document.querySelector("#profileTitle");
+          profileTitle.innerText = `Hello, ${data.username} `;
+          document.querySelector(".container").classList.toggle("hidden");
+
+          return userProfileData;
+        } catch (err) {
+          console.log(`fetch error:${err}`);
+        }
+      };
+
+      //Message
+      const roomBtns = document.querySelectorAll(".btn-room");
+      const userTree = document.querySelector(".user-tree");
+      const addMessageBtn = document.querySelector("#addMessage");
+      const messageList = document.querySelector("#messageList");
+      const addMessageModule = document.querySelector(".addMessageModule");
+      const messageForm = document.querySelector("#messageForm");
+      let currentRoom;
+
+      //Open Message Tree
+      roomBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          userTree.classList.remove("hidden");
+          messageList.innerHTML = "";
+
+          //Get the selected Room
+          const currentRoom = btn.getAttribute("data-room");
+
+          //Built the tree from selected Room data
+          buildList(currentRoom);
+        });
+      });
+
+      //open input-message Module
+      addMessageBtn.addEventListener("click", () => {
+        addMessageModule.classList.remove("hidden");
+      });
+
+      //send Message to server
+      messageForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const messageInput = document.querySelector("#messageInput");
+
+        socket.emit("sendMessage", {
+          fromUserId: userProfileData._id,
+          message: messageInput.value.trim(),
+          tree: currentRoom,
+        });
+        console.log(
+          `fromUser:${userProfileData.username}-${userProfileData._id},message:${messageInput.value.trim()},tree:${currentRoom}`
+        );
+        addMessageModule.classList.add("hidden");
+        messageInput.value = "";
+      });
+
+      //Listen new Message from server
+      socket.on("newMessage", (showMessage) => {
+        if (showMessage.tree === currentRoom || !showMessage.tree) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${showMessage.fromUsername}</strong>: ${showMessage.message}`;
+          messageList.append(li);
+        }
+      });
+
+      //Load Room(tree)-Messages from DataBase
+      const fetchMessagesByRoom = async (selectedRoom) => {
+        try {
+          const res = await fetch(
+            `http://localhost:3000/api/msTree/tree/${selectedRoom}`,
+            {
+              method: "GET",
+            }
+          );
+          if (!res.ok) {
+            throw new Error(`Error: ${res.status}`);
+          }
+          const data = await res.json();
+          return data;
+        } catch (err) {
+          console.error("Fetch error:", err);
+        }
+      };
+
+      //Built the treeMessage List after fetching data
+      const buildList = async () => {
+        messageList.innerHTML = "";
+        const newMessageList = await fetchMessagesByRoom(currentRoom);
+
+        newMessageList.forEach((list) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${list.username}</strong>: ${list.message}`;
+          messageList.prepend(li);
+        });
+      };
+
+      // Load profile data on page load (At very Beginning)
+      loadProfile();
     </script>
+  </body>
 </html>
 
 <style>
-    .hidden{
-        display: none;
-    }
-    *{
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-    .user-profile{
-        font-family: "Inter", sans-serif;
-    }
-    h1, h4{
-        text-align: center;
-        margin-bottom: 20px;
-        margin-top: 20px;
-        color: #0D6232;
-    }
-    button{
-        width: 170px;
-        height: 42px;
-        background: #C12D2D;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        border-radius: 40px;
-        border: none;
-        color: white;
-        margin: 30px auto;
-        font-weight: bold;
-    }
-    .cover{
-        margin: auto;
-        width: 350px;
-        height: 200px;
-        border-radius: 10px;
-        background-image: url(assets/snowman.jpg);
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
+  .hidden {
+    display: none;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  .user-profile {
+    font-family: "Inter", sans-serif;
+  }
+  h1,
+  h4 {
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    color: #0d6232;
+  }
+  button {
+    width: 170px;
+    height: 42px;
+    background: #c12d2d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 40px;
+    border: none;
+    color: white;
+    margin: 30px auto;
+    font-weight: bold;
+  }
+  .cover {
+    margin: auto;
+    width: 350px;
+    height: 200px;
+    border-radius: 10px;
+    background-image: url(assets/snowman.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 </style>
