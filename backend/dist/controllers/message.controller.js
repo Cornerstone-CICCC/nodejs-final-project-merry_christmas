@@ -29,7 +29,7 @@ const getMessagesByTree = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.status(500).json({ error: `Error to fetch message from the selected Tree.` });
     }
 });
-const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messageId = req.params.messageId;
         const selectedMessage = yield message_model_1.MessageModel.findByIdAndDelete({ messageId });
@@ -39,7 +39,7 @@ const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ error: `Error to edit message.` });
     }
 });
-const deleteMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messageId = req.params.messageId;
         const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate({ messageId });

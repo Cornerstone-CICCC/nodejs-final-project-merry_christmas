@@ -22,7 +22,7 @@ const getMessagesByTree = async (req: Request<{ tree: string }>, res: Response) 
     }
 }
 
-const editMessage = async (req: Request<{ messageId: string }>, res: Response) => {
+const deleteMessage = async (req: Request<{ messageId: string }>, res: Response) => {
     try {
         const messageId = req.params.messageId
         const selectedMessage = await MessageModel.findByIdAndDelete({ messageId })
@@ -33,7 +33,7 @@ const editMessage = async (req: Request<{ messageId: string }>, res: Response) =
     }
 }
 
-const deleteMessage = async (req: Request<{ messageId: string }>, res: Response) => {
+const editMessage = async (req: Request<{ messageId: string }>, res: Response) => {
     try {
         const messageId = req.params.messageId
         const selectedMessage = await MessageModel.findByIdAndUpdate({ messageId })

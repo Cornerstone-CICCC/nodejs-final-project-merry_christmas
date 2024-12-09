@@ -1,5 +1,5 @@
 ---
-
+import "../styles/global.css"
 ---
 
 <html lang="en">
@@ -19,10 +19,10 @@
                 <h1 id="profileTitle">Hello, $user!</h1>
                 <div class="cover"></div>
                 <h4>Enter any room and decorate!</h4>
-                <button class="btn-room" data-room="Tree 1">Tree 1</button>
-                <button class="btn-room" data-room="Tree 2">Tree 2</button>
-                <button class="btn-room" data-room="Tree 3">Tree 3</button>
-                <button class="btn-room" data-room="Tree 4">Tree 4</button>
+                <button class="btn-room" data-room="Tree1">Tree 1</button>
+                <button class="btn-room" data-room="Tree2">Tree 2</button>
+                <button class="btn-room" data-room="Tree3">Tree 3</button>
+                <button class="btn-room" data-room="Tree4">Tree 4</button>
                 
 
             </div>
@@ -38,50 +38,63 @@
                 <div class="overlay hidden">
                     <div class="modal">
                         <button class="close-btn">X</button>
-                        <form class="msg-form" action="">
-                            <textarea required class="message" id="message" placeholder="Your message goes here"></textarea>
-                            <button class="submit-btn" type="submit">Decorate!</button>
-                        </form>
+                        <div class="modal-content">
+                            <form class="msg-form" action="">
+                                <textarea required class="message" id="message" placeholder="Your message goes here"></textarea>
+                                <button class="submit-btn" type="submit">Decorate!</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </body>
-    <script>
+    <script type="module">
         import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
         const socket = io('http://localhost:3000')
 
-        const container = document.querySelector(".container") as HTMLDivElement
-        const loading = document.querySelector(".loading") as HTMLHeadingElement
-        const closeBtn = document.querySelector(".close-btn") as HTMLButtonElement
-        const addMsg = document.querySelector(".add-msg") as HTMLButtonElement
-        const logoutBtn = document.querySelector(".logout-btn") as HTMLButtonElement
+        const container = document.querySelector(".container") 
+        const loading = document.querySelector(".loading") 
+        const closeBtn = document.querySelector(".close-btn") 
+        const addMsg = document.querySelector(".add-msg") 
+        const logoutBtn = document.querySelector(".logout-btn") 
         const treeButtons = document.querySelectorAll(".btn-room") 
-        const messages = document.querySelector(".messages") as HTMLDivElement
-        const messageForm = document.querySelector(".msg-form") as HTMLFormElement
-        const messageInput = document.querySelector(".message") as HTMLTextAreaElement
-        const overlay = document.querySelector(".overlay") as HTMLDivElement
-        const profileTitle = document.querySelector("#profileTitle") as HTMLHeadingElement
-        const tree = document.querySelector(".tree") as HTMLDivElement
-        const userProfile = document.querySelector(".user-profile") as HTMLDivElement
-        const backToProfile = document.querySelector(".back2profile") as HTMLButtonElement
+        const messages = document.querySelector(".messages")
+        const messageForm = document.querySelector(".msg-form")
+        const messageInput = document.querySelector(".message") 
+        const overlay = document.querySelector(".overlay")
+        const profileTitle = document.querySelector("#profileTitle") 
+        const tree = document.querySelector(".tree")
+        const userProfile = document.querySelector(".user-profile") 
+        const backToProfile = document.querySelector(".back2profile") 
+        const modal = document.querySelector(".modal")
+        const modalContent = document.querySelector(".modal-content")
 
         //Trees and rooms         
         let currentTree
         //handle room(tree) buttons 
         treeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async() => {
+
+                const userInfo = await fetchUserInfo()
+
                 messages.innerHTML = ''
                 tree.classList.remove("hidden")
                 userProfile.classList.add("hidden")
-
                 const newTree = btn.getAttribute('data-room')
+
+                if(currentTree) {
+                    socket.emit("leave room", {tree: currentTree, username: userInfo.username })
+                }
+
                 // console.log(newTree)
-                currentTree = newTree 
-                buildTree(currentTree)
+                currentTree = newTree
+                socket.emit("join room", { tree: currentTree, username: userInfo.username })
+
+                const treeMesages = await fetchMessagesByRoom(currentTree)
+                buildTree()
             })
         }) 
-        //cannot fetch current tree here 
 
         //fetch user info 
         const fetchUserInfo = async () => {
@@ -91,28 +104,118 @@
             const data = await res.json()
             return data
         }
-
-        const fetchMessages = async () => {
-
+        //fetch user info by id 
+        const fetchUserInfoById = async(id) => {
+            const res = await fetch(`http://localhost:3000/user/profile/${id}`, {
+                credentials: "include"
+            })
+            const data = await res.json()
+            return data
         }
-        const buildTree = async(tree: string) => {
+
+        //fetch messages created by each tree 
+        const fetchMessagesByRoom = async (tree) => {
+            // console.log(tree)
+            try{
+                const res= await fetch(`http://localhost:3000/api/msTree/tree/${tree}`, {
+                    method: "GET"
+                })
+                if(!res.ok){
+                    throw new Error(`Error: ${res.status}`)
+                }
+                const data = await res.json()
+                return data
+            }catch(e){
+                console.error(e)
+            }
+        }
+
+        // build tree messages dynamically 
+        const buildTree = async() => {
+            messages.innerHTML = ''
+            const messageList = await fetchMessagesByRoom(currentTree)
             const userInfo = await fetchUserInfo()
+            
+            messageList.forEach(message => {
+                // console.log(message)
+                const ornament = document.createElement("div")
+                ornament.classList.add("ornament")
+                ornament.innerHTML = `
+                    <img class="ornament-img" src="assets/red.png" alt="christmas ornament">
+                `
+                // <p>${userInfo.username}</p>
+                messages.appendChild(ornament)
 
-            messages.innerHTML = ``
+                if(message.fromUserId === userInfo._id){
+                    ornament.addEventListener("click", () => {
+                        overlay.classList.remove("hidden")
+                        // modalContent.classList.add("hidden")
+
+                        // const newModalContent = document.createElement("div")
+                        modalContent.innerHTML = `
+                            <h3>Message from: ${message.fromUserId}</h3>
+                            <button class="edit">edit</button>
+                            <textarea class="hidden"></textarea>
+                            <p>${message.message}</p>
+                            <button class="delete">delete</button>
+                        `
+                        // modal.appendChild(newModalContent)
+                        const editBtn = modalContent.querySelector(".edit")
+                        const deleteBtn = modalContent.querySelector(".delete")
+
+                        deleteBtn.addEventListener("click", async() => {
+                            console.log(message._id)
+                            const res = await fetch(`http:/localhost:3000/api/msTree/message/${message._id}`, {
+                                method: "DELETE", 
+                                credentials: "include"
+                            })
+                            const data = await res.json()
+                            console.log(data)
+                            if(!res.ok){
+                                console.log(data.error)    
+                            }
+                            ornament.remove()
+                            overlay.classList.add("hidden")
+                        })
+                    })
+                    
+                } else{
+                    ornament.addEventListener("click", () => {
+                    overlay.classList.remove("hidden")
+
+                    modalContent.innerHTML = `
+                        <h3>Message from: ${message.fromUserId}</h3>
+                        <p>${message.message}</p>
+                    `
+                    })
+                }
+            })
         }
+
 
         //send message to server
         messageForm.addEventListener("submit", async(e) => {
             e.preventDefault()
             const message  = messageInput.value
             const data = await fetchUserInfo()
-            console.log(data._id)
             socket.emit("addMessage", {
                 fromUserId: data._id,
                 message: message,
-                tree: 'currentTree'
+                tree: currentTree
             })
             messageInput.value = ''
+        })
+
+        // listen to new messages 
+        socket.on("newMessage", chat => {
+            if(chat.tree === currentTree || !chat.tree){
+                const newOrnament  = document.createElement("div")
+
+                newOrnament.innerHTML = `
+                    <img src="assets/red.png" alt="christmas ornament">
+                `
+                messages.appendChild(newOrnament)
+            }
         })
 
         //close modal
@@ -139,7 +242,7 @@
         })
 
         //load profile 
-        const loadProfile = async (): Promise<void> => {
+        const loadProfile = async () => {
             const res = await fetch(`http://localhost:3000/user/profile`, {
                 credentials: "include"
             })
@@ -158,6 +261,9 @@
 </html>
 
 <style>
+    .messages{
+        position: absolute;
+    }
     .tree-content{
         position: relative;
         display: flex; 

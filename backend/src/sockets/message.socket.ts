@@ -20,10 +20,25 @@ const socket = (io: Server) => {
             }
         })
 
-        //editMessage
+        socket.on('join room', (data) => {
+            socket.join(data.tree)
 
-        //deleteMessage
+            io.to(data.tree).emit('newMessage', {
+                username: 'System', 
+                message: `${data.username} joined the room ${data.tree}`,
+                tree: data.tree, 
+            })
+        })
 
+        socket.on('leave room', (data) => {
+            socket.leave(data.tree)
+
+            io.to(data.tree).emit('newMessage', {
+                username: 'System', 
+                tree: data.tree, 
+                message: `${data.username}, has left the room ${data.tree}`
+            })
+        })
 
         //disconnect
         socket.on('disconnect', () => {

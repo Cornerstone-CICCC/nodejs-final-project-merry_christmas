@@ -10,4 +10,5 @@ userRouter.post('/login', user_controller_1.default.userLogin);
 userRouter.post('/register', user_controller_1.default.userRegister);
 userRouter.get('/logout', user_controller_1.default.userLogout);
 userRouter.get('/profile', user_controller_1.default.userProfile);
+userRouter.get("/:id", user_controller_1.default.getUserById);
 exports.default = userRouter;

@@ -102,11 +102,15 @@ const userProfile = async (req: Request, res: Response) => {
     res.json(user);
 }
 
-
+const getUserById = async(req: Request<{ id: string }>, res: Response) => {
+    const user = await UserModel.findById(req.params.id)
+    res.json(user)
+}
 
 export default {
     userRegister,
     userLogin,
     userLogout,
-    userProfile
+    userProfile, 
+    getUserById
 }

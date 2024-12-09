@@ -1,0 +1,23 @@
+.ornament-img{
+    max-width: 50px;
+}
+
+.ornament{
+    border-radius: 50%;
+    width: 60px;
+    text-align: center;
+    font-family: "Inter", sans-serif;
+    color:white;
+    font-weight: bold;
+    border: 1px solid transparent;
+    transition: all .3s ease-in-out
+}
+
+.ornament:hover{
+    border: 1px solid red;
+
+}
+
+.ornament p {
+    margin: 0;
+}

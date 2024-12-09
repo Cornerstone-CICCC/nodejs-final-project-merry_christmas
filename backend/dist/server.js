@@ -28,6 +28,10 @@ app.use(express_1.default.urlencoded({ extended: true }));
 //Routes
 app.use('/user', user_routes_1.default);
 app.use('/api/msTree', message_route_1.default);
+//fallback
+app.use((req, res) => {
+    res.status(404).json({ error: "Invalid Route" });
+});
 // Create HTTP server and attach Socket.IO
 const server = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(server, {

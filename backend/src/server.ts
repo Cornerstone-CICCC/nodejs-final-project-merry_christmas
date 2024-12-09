@@ -1,4 +1,5 @@
 import express from "express";
+import { Request, Response } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from 'cors'
@@ -28,7 +29,10 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/user', userRouter)
 app.use('/api/msTree', messageRouter)
 
-
+//fallback
+app.use((req: Request, res: Response) => {
+    res.status(404).json({ error: "Invalid Route" })
+})
 
 // Create HTTP server and attach Socket.IO
 const server = createServer(app)

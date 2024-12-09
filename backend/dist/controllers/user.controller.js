@@ -92,9 +92,14 @@ const userProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
     res.json(user);
 });
+const getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.UserModel.findById(req.params.id);
+    res.json(user);
+});
 exports.default = {
     userRegister,
     userLogin,
     userLogout,
-    userProfile
+    userProfile,
+    getUserById
 };
