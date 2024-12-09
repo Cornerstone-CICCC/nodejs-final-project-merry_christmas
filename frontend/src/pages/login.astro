@@ -1,0 +1,95 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Login</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:wght@200..1000&display=swap" rel="stylesheet">
+	</head>
+	<body>
+        <div class="container">
+            <form>
+                <img class="logo" src="assets/logo.png" alt="logo">
+                <input type="text" name="username" id="username" placeholder="Username" required>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <button type="submit">Log In</button>
+            </form>
+            <p>Don't have an account?<a href="/signup">Sign up</a></p>
+        </div>
+	</body>
+	<script>
+        const form = document.querySelector("form") as HTMLFormElement
+
+        form.addEventListener("submit", async(e) => {
+            e.preventDefault()
+            const formData = new FormData(form)
+
+            const username = formData.get("username")
+            const password = formData.get("password")
+
+            const res = await fetch(`http://localhost:3000/user/login`, {
+            method: "POST", 
+                headers: {
+					"Content-Type": 'application/json',
+				},
+				body: JSON.stringify({
+					"username": username,
+					"password": password
+				}),
+				credentials: 'include'
+            })
+            // const data = await res.json()
+            if(res.ok){
+                window.location.href = "/profile"
+            }
+        })
+	</script>
+</html>
+<style>
+    .container{
+        font-family: "Inter", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+    img{
+        max-width: 200px;
+    }
+    input{
+        text-align: center;
+        font-size: 16px;
+        width: 240px; 
+        height: 44px; 
+        border-radius: 40px;
+        border: 2px solid #C12D2D;
+        color: rgb(164, 164, 164);
+    }
+    button{
+        height: 45px;
+		width: 240px;
+		border-radius: 40px;
+		border: none; 
+		background-color: #C12D2D;
+		color: white; 
+		font-size: 16px;
+		font-weight: bold;
+    }
+    p{
+        color: #898585;
+    }
+    p a{
+        font-weight: bold;
+        text-decoration: underline;
+    }
+</style>

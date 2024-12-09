@@ -1,0 +1,96 @@
+.ornament-img{
+    max-width: 50px;
+}
+.hidden{
+    display: none;
+}
+.ornament{
+    border-radius: 50%;
+    width: 60px;
+    text-align: center;
+    font-family: "Inter", sans-serif;
+    color:white;
+    font-weight: bold;
+    border: 1px solid transparent;
+    transition: all .3s ease-in-out
+}
+
+.ornament:hover{
+    cursor: pointer;
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+button:hover{
+    cursor: pointer
+}
+
+@keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+  
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+  
+    40%, 60% {
+      transform: translate3d(4px, 0, 0);
+    }
+}
+
+.ornament p {
+    margin: 0;
+}
+
+.overlay{
+    position: fixed; 
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,.8);
+    z-index: 1000000000;
+}
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 1rem;
+    max-width: 280px;
+    padding: 2rem;
+    background-color: white;
+    text-align: justify;
+    border-radius: 10px;
+}
+
+.close{
+    background-image: url(assets/close.png);
+    height: 30px;
+    width: 30px;
+    border: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.close2{
+    background-image: url(assets/close.png);
+    height: 30px;
+    width: 30px;
+    border: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
