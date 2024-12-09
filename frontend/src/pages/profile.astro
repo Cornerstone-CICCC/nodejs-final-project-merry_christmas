@@ -148,27 +148,33 @@ import "../styles/global.css"
 
                 if(message.fromUserId === userInfo._id){
                     ornament.addEventListener("click", () => {
-                        overlay.classList.remove("hidden")
-                        // modalContent.classList.add("hidden")
-
+                        const ornamentModal = document.createElement("div")
+                        // overlay.classList.remove("hidden")
+                        
+                        ornamentModal.classList.add("overlay")
                         // const newModalContent = document.createElement("div")
-                        modalContent.innerHTML = `
-                            <h3>Message from: ${message.fromUserId}</h3>
-                            <p class="description">${message.message}</p>
-                            <button class="edit">edit</button>
-                            <form class="edit-form hidden">
-                                <textarea name="content" id="content" class="input"></textarea>
-                                <button type="submit">Edit this</button>
-                            </form>
-                            <button class="delete">delete</button>
+                        ornamentModal.innerHTML = `
+                            <div class="modal">
+                                <button class="close">X</button>
+                                <h3>Message from: ${message.fromUserId}</h3>
+                                <p class="description">${message.message}</p>
+                                <button class="edit">edit</button>
+                                <form class="edit-form hidden">
+                                    <textarea name="content" id="content" class="input"></textarea>
+                                    <button type="submit">Edit this</button>
+                                </form>
+                                <button class="delete">delete</button>
+                            </div>
                         `
-                        // modal.appendChild(newModalContent)
-                        const editBtn = modalContent.querySelector(".edit")
-                        const deleteBtn = modalContent.querySelector(".delete")
-                        const editInput = modalContent.querySelector(".input")
-                        const messageDescription = modalContent.querySelector(".description")
-                        const editForm = modalContent.querySelector(".edit-form")
-                        const submitBtn = modalContent.querySelector(".submit")
+                        container.appendChild(ornamentModal)
+
+                        const editBtn = ornamentModal.querySelector(".edit")
+                        const deleteBtn = ornamentModal.querySelector(".delete")
+                        const editInput = ornamentModal.querySelector(".input")
+                        const messageDescription = ornamentModal.querySelector(".description")
+                        const editForm = ornamentModal.querySelector(".edit-form")
+                        const submitBtn = ornamentModal.querySelector(".submit")
+                        const closeBtn = ornamentModal.querySelector(".close")
 
                         deleteBtn.addEventListener("click", async() => {
                             console.log(message._id)
@@ -180,7 +186,7 @@ import "../styles/global.css"
                             console.log(data)
                             if(res.ok){
                                 ornament.remove()
-                                overlay.classList.add("hidden")  
+                                ornamentModal.remove() 
                             }
                         })
 
@@ -198,7 +204,7 @@ import "../styles/global.css"
                                     header: {
                                         "Content-Type": "application/json"
                                     }, 
-                                    body: ({
+                                    body: JSON.stringify({
                                         message: formData.get("content")
                                     })
                                 })
@@ -209,6 +215,9 @@ import "../styles/global.css"
                                 //     overlay.classList.add("hidden") 
                                 // }
                             })
+                        })
+                        closeBtn.addEventListener("click", () => {
+                            ornamentModal.remove()
                         })
                     })
                     
@@ -237,13 +246,14 @@ import "../styles/global.css"
                 tree: currentTree
             })
             messageInput.value = ''
+            overlay.classList.add("hidden")
         })
 
         // listen to new messages 
         socket.on("newMessage", chat => {
             if(chat.tree === currentTree || !chat.tree){
                 const newOrnament  = document.createElement("div")
-
+                newOrnament.classList.add("ornament")
                 newOrnament.innerHTML = `
                     <img src="assets/red.png" alt="christmas ornament">
                 `
@@ -257,12 +267,6 @@ import "../styles/global.css"
         })
         //open modal 
         addMsg.addEventListener("click", () => {
-            modalContent.innerHTML = `
-                <form class="msg-form" action="">
-                    <textarea required class="message" id="message" placeholder="Your message goes here"></textarea>
-                    <button class="submit-btn" type="submit">Decorate!</button>
-                </form>
-            `
             overlay.classList.remove("hidden")
         })
 
