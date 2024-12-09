@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import { MessageModel } from "../models/message.model";
+import messageController from "../controllers/message.controller";
 import { UserModel } from "../models/user.model";
 import mongoose from "mongoose";
 

@@ -120,10 +120,28 @@
       socket.on("newMessage", (showMessage) => {
         if (showMessage.tree === currentRoom || !showMessage.tree) {
           const li = document.createElement("li");
-          li.innerHTML = `<strong>${showMessage.fromUsername}</strong>: ${showMessage.message}`;
+          li.innerHTML = `<strong>${showMessage.fromUsername}</strong>: ${showMessage.message} <span><button class='deleteBtn'>delete</button><button class='editBtn'>Edit</button></span>`;
+
+          //deleteBtn
+          //const deleteBtn = li.querySelector(".deleteBtn");
+
+          //editBtn
+
           messageList.append(li);
         }
       });
+
+      // Send Delete request to server
+      messageList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("deleteBtn")) {
+          //socket send
+          const li = e.target.closet("li");
+          li.querySelector("strong");
+          socket.emit("deleteRequest");
+        }
+      });
+
+      //
 
       //Load Room(tree)-Messages from DataBase
       const fetchMessagesByRoom = async (selectedRoom) => {
@@ -151,7 +169,7 @@
 
         newMessageList.forEach((list) => {
           const li = document.createElement("li");
-          li.innerHTML = `<strong>${list.username}</strong>: ${list.message}`;
+          li.innerHTML = `<strong>${list.username}</strong>: ${list.message}<span><button class='deleteBtn'>delete</button></span>`;
           messageList.prepend(li);
         });
       };
