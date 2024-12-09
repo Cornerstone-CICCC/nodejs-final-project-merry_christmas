@@ -28,7 +28,7 @@ const socket = (io) => {
         }));
         socket.on('join room', (data) => {
             socket.join(data.tree);
-            io.to(data.tree).emit('newMessage', {
+            io.to(data.tree).emit('newUserJoin', {
                 username: 'System',
                 message: `${data.username} joined the room ${data.tree}`,
                 tree: data.tree,
@@ -36,7 +36,7 @@ const socket = (io) => {
         });
         socket.on('leave room', (data) => {
             socket.leave(data.tree);
-            io.to(data.tree).emit('newMessage', {
+            io.to(data.tree).emit('userLeave', {
                 username: 'System',
                 tree: data.tree,
                 message: `${data.username}, has left the room ${data.tree}`

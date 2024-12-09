@@ -97,8 +97,6 @@ import Header2 from "./partials/header2.astro";
           tree: currentTree,
           username: userInfo.username,
         });
-
-        const treeMesages = await fetchMessagesByRoom(currentTree);
         buildTree();
       });
     });
@@ -144,28 +142,42 @@ import Header2 from "./partials/header2.astro";
     const buildTree = async () => {
       messages.innerHTML = "";
       const messageList = await fetchMessagesByRoom(currentTree);
-      const userInfo = await fetchUserInfo();
 
       messageList.forEach((message) => {
         // console.log(message)
         const ornament = document.createElement("div");
         ornament.classList.add("ornament");
+        ornament.setAttribute("fromUserId", `${message.fromUserId}`);
+        ornament.setAttribute("message", `${message.message}`);
+        ornament.setAttribute("messageId", `${message._id}`);
+        ornament.setAttribute("fromUsername", `${message.username}`);
+
         ornament.innerHTML = `
                     <img class="ornament-img" src="assets/red.png" alt="christmas ornament">
                 `;
-        // <p>${userInfo.username}</p>
         messages.appendChild(ornament);
+      });
+    };
 
-                if(message.fromUserId === userInfo._id){
-                    ornament.addEventListener("click", () => {
-                        const ornamentModal = document.createElement("div")
-                        
-                        ornamentModal.classList.add("overlay")
-                        ornamentModal.innerHTML = `
+    //Edit&Delete
+    const userInfo = await fetchUserInfo();
+
+    messages.addEventListener("click", (e) => {
+      const target = e.target.closest(".ornament");
+      const fromUserId = target.getAttribute("fromUserId");
+      const message = target.getAttribute("message");
+      const messageId = target.getAttribute("messageId");
+      const fromUsername = target.getAttribute("fromUsername");
+
+      const ornamentModal = document.createElement("div");
+      ornamentModal.classList.add("overlay");
+
+      if (fromUserId === userInfo._id) {
+        ornamentModal.innerHTML = `
                             <div class="modal">
                                 <button class="close"></button>
                                 <h3 class="message-title">Message from: ${userInfo.username}</h3>
-                                <p class="description">${message.message}</p>
+                                <p class="description">${message}</p>
                                 <button class="edit">edit</button>
                                 <form class="edit-form hidden">
                                     <textarea name="content" id="content" class="input"></textarea>
@@ -174,92 +186,87 @@ import Header2 from "./partials/header2.astro";
                                 <button class="delete">delete</button>
                             </div>
                         `;
-            container.appendChild(ornamentModal);
+        container.appendChild(ornamentModal);
 
-            const editBtn = ornamentModal.querySelector(".edit");
-            const deleteBtn = ornamentModal.querySelector(".delete");
-            const editInput = ornamentModal.querySelector(".input");
-            const messageDescription =
-              ornamentModal.querySelector(".description");
-            const editForm = ornamentModal.querySelector(".edit-form");
-            const submitBtn = ornamentModal.querySelector(".submit");
-            const closeBtn = ornamentModal.querySelector(".close");
+        const editBtn = ornamentModal.querySelector(".edit");
+        const deleteBtn = ornamentModal.querySelector(".delete");
+        const editInput = ornamentModal.querySelector(".input");
+        const messageDescription = ornamentModal.querySelector(".description");
+        const editForm = ornamentModal.querySelector(".edit-form");
+        const submitBtn = ornamentModal.querySelector(".submit");
+        const closeBtn = ornamentModal.querySelector(".close");
 
-            deleteBtn.addEventListener("click", async () => {
-              //console.log(message._id);
-              const res = await fetch(
-                `http://localhost:3000/api/msTree/delete/${message._id}`,
-                {
-                  method: "DELETE",
-                  credentials: "include",
-                }
-              );
-              const data = await res.json();
-              //console.log(data);
-              if (res.ok) {
-                ornament.remove();
-                ornamentModal.remove();
+        deleteBtn.addEventListener("click", async () => {
+          //console.log(message._id);
+          const res = await fetch(
+            `http://localhost:3000/api/msTree/delete/${messageId}`,
+            {
+              method: "DELETE",
+              credentials: "include",
+            }
+          );
+          const data = await res.json();
+          //console.log(data);
+          if (res.ok) {
+            ornament.remove();
+            ornamentModal.remove();
+          }
+        });
+
+        //edit
+        editBtn.addEventListener("click", async () => {
+          editBtn.classList.add("hidden");
+          messageDescription.classList.add("hidden");
+          editForm.classList.remove("hidden");
+
+          editForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(editForm);
+            const res = await fetch(
+              `http://localhost:3000/api/msTree/update/${messageId}`,
+              {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  message: formData.get("content"),
+                }),
               }
-            });
+            );
 
-            //edit
-            editBtn.addEventListener("click", async () => {
-              editBtn.classList.add("hidden");
-              messageDescription.classList.add("hidden");
-              editForm.classList.remove("hidden");
-
-              editForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const formData = new FormData(editForm);
-                const res = await fetch(
-                  `http://localhost:3000/api/msTree/update/${message._id}`,
-                  {
-                    method: "PUT",
-                    credentials: "include",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      message: formData.get("content"),
-                    }),
-                  }
-                );
-
-                if (res.ok) {
-                  const data = await res.json();
-                //   overlay.classList.add("hidden")
-                  ornamentModal.remove();
-                  //console.log("Updated Message-fe:", data.updatedMessage);
-                  message.message = data.updatedMessage;
-                }
-              });
-            });
-
-            closeBtn.addEventListener("click", () => {
+            if (res.ok) {
+              const data = await res.json();
+              //   overlay.classList.add("hidden")
               ornamentModal.remove();
-            });
+              //console.log("Updated Message-fe:", data.updatedMessage);
+              message = data.updatedMessage;
+            }
           });
-        } else {
-          ornament.addEventListener("click", () => {
-            const notMessageUserModal = document.createElement("div")
-            notMessageUserModal.classList.add("overlay")
-            notMessageUserModal.innerHTML = `
+        });
+
+        closeBtn.addEventListener("click", () => {
+          ornamentModal.remove();
+        });
+      } else {
+        const notMessageUserModal = document.createElement("div");
+        notMessageUserModal.classList.add("overlay");
+        notMessageUserModal.innerHTML = `
                 <div class="modal">
                     <button class="close2"></button>
-                    <h3>Message from: ${message.username}</h3>
-                    <p>${message.message}</p>
+                    <h3>Message from: ${fromUsername}</h3>
+                    <p>${message}</p>
                 </div>
-            `
-            container.appendChild(notMessageUserModal)
-            const btnClose2 = notMessageUserModal.querySelector(".close2")
+            `;
+        container.appendChild(notMessageUserModal);
+        const btnClose2 = notMessageUserModal.querySelector(".close2");
 
-            btnClose2.addEventListener("click", () => {
-                notMessageUserModal.remove()
-            })
-          });
-        }
-      });
-    };
+        btnClose2.addEventListener("click", () => {
+          notMessageUserModal.remove();
+        });
+      }
+    });
 
     //send message to server
     messageForm.addEventListener("submit", async (e) => {
