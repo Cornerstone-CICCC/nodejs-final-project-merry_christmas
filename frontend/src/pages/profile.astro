@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css"
+import Header2 from "./partials/header2.astro"
 ---
 
 <html lang="en">
@@ -14,7 +15,7 @@ import "../styles/global.css"
             <h1 class="loader"></h1>
         </div>
         <div class="container hidden">
-            <button class="logout-btn">logout</button>
+            <Header2/>
             <div class="user-profile ">
                 <h1 id="profileTitle">Hello, $user!</h1>
                 <div class="cover"></div>
@@ -34,7 +35,6 @@ import "../styles/global.css"
                     </div>
                 </div>
                 <button class="add-msg">Decorate Me</button>
-                <button class="back2profile">Back to my profile</button>
                 <div class="overlay hidden">
                     <div class="modal">
                         <button class="close-btn">X</button>
@@ -57,7 +57,7 @@ import "../styles/global.css"
         const loading = document.querySelector(".loading") 
         const closeBtn = document.querySelector(".close-btn") 
         const addMsg = document.querySelector(".add-msg") 
-        const logoutBtn = document.querySelector(".logout-btn") 
+        const navUl = document.querySelector("nav ul")
         const treeButtons = document.querySelectorAll(".btn-room") 
         const messages = document.querySelector(".messages")
         const messageForm = document.querySelector(".msg-form")
@@ -66,7 +66,7 @@ import "../styles/global.css"
         const profileTitle = document.querySelector("#profileTitle") 
         const tree = document.querySelector(".tree")
         const userProfile = document.querySelector(".user-profile") 
-        const backToProfile = document.querySelector(".back2profile") 
+        const backToProfile = document.querySelector(".profile") 
         const modal = document.querySelector(".modal")
         const modalContent = document.querySelector(".modal-content")
 
@@ -190,6 +190,7 @@ import "../styles/global.css"
                             }
                         })
 
+                        //edit is not working 
                         editBtn.addEventListener("click", async() => {
                             editBtn.classList.add("hidden")
                             messageDescription.classList.add("hidden")
@@ -197,6 +198,7 @@ import "../styles/global.css"
 
                             editForm.addEventListener("submit", async(e) => {
                                 e.preventDefault()
+                                const value = editInput.value
                                 const formData = new FormData(editForm)
                                 const res= await fetch(`http://localhost:3000/api/msTree/update/${message._id}`, {
                                     method: "PUT", 
@@ -205,9 +207,10 @@ import "../styles/global.css"
                                         "Content-Type": "application/json"
                                     }, 
                                     body: JSON.stringify({
-                                        message: formData.get("content")
+                                        message: value
                                     })
                                 })
+                                console.log(formData.get("content"))
                                 const data = await res.json()
                                 console.log(data)
                                 console.log(message.message)
@@ -216,6 +219,7 @@ import "../styles/global.css"
                                 // }
                             })
                         })
+
                         closeBtn.addEventListener("click", () => {
                             ornamentModal.remove()
                         })
@@ -255,7 +259,7 @@ import "../styles/global.css"
                 const newOrnament  = document.createElement("div")
                 newOrnament.classList.add("ornament")
                 newOrnament.innerHTML = `
-                    <img src="assets/red.png" alt="christmas ornament">
+                    <img class="ornament-img" src="assets/red.png" alt="christmas ornament">
                 `
                 messages.appendChild(newOrnament)
             }
@@ -270,18 +274,11 @@ import "../styles/global.css"
             overlay.classList.remove("hidden")
         })
 
-        //logout user 
-        logoutBtn.addEventListener("click", async() => {
-            await fetch(`http://localhost:3000/user/logout`, {
-                credentials: "include"
-            })
-            window.location.href = '/'
-        })
-
-        //back to my profile button 
+        // //back to my profile button 
         backToProfile.addEventListener("click", () => {
             tree.classList.add("hidden")
             userProfile.classList.remove("hidden")
+            navUl.style.right = "-200px"
         })
 
         //load profile 
@@ -419,5 +416,18 @@ import "../styles/global.css"
         40%{background-position:0% 100%, 50%   0%,100%  50%}
         60%{background-position:0%  50%, 50% 100%,100%   0%}
         80%{background-position:0%  50%, 50%  50%,100% 100%}
+    }
+
+    @media only screen and (min-width: 768px){
+        .add-msg{
+            bottom: 0;
+            right: 40px;
+        }
+
+        img{
+            max-width: 700px;
+            width: 100%;
+        }
+
     }
 </style>

@@ -34,7 +34,6 @@ const deleteMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const messageId = req.params.id;
         const selectedMessage = yield message_model_1.MessageModel.findByIdAndDelete(messageId);
         if (!selectedMessage) {
-            console.log('message does not exist');
             res.status(404).json({ error: 'Message does not exist' });
             return;
         }
@@ -48,14 +47,13 @@ const deleteMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messageId = req.params.id;
-        const message = req.body;
-        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate(messageId, { message }, { new: true });
+        const { message } = req.body;
+        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate(messageId, message, { new: true });
         if (!selectedMessage) {
-            console.log('message does not exist');
             res.status(404).json({ error: 'Message does not exist' });
             return;
         }
-        res.status(200).json({ message: 'Edit message successfully!' });
+        res.status(200).json({ message: 'Edit message successfully!', selectedMessage });
     }
     catch (error) {
         console.error(error);
