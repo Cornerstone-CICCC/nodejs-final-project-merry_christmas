@@ -43,7 +43,7 @@ const editMessage = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const messageId = req.params.id
         const { message } = req.body
-        const selectedMessage = await MessageModel.findByIdAndUpdate(messageId, message, { new: true })
+        const selectedMessage = await MessageModel.findByIdAndUpdate(messageId, {message}, { new: true })
         if(!selectedMessage){
             res.status(404).json({ error: 'Message does not exist' })
             return

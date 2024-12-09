@@ -48,7 +48,7 @@ const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const messageId = req.params.id;
         const { message } = req.body;
-        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate(messageId, message, { new: true });
+        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate(messageId, { message }, { new: true });
         if (!selectedMessage) {
             res.status(404).json({ error: 'Message does not exist' });
             return;
