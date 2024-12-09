@@ -16,9 +16,9 @@ const socket = (io) => {
         console.log(`User Connected:${socket.id}`);
         //addMessage event
         socket.on('addMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
-            const { fromUserId, message, tree } = data;
+            const { fromUserId, username, message, tree } = data;
             try {
-                const newMessage = new message_model_1.MessageModel({ fromUserId, message, tree });
+                const newMessage = new message_model_1.MessageModel({ fromUserId, username, message, tree });
                 yield newMessage.save();
                 io.emit('newMessage', newMessage);
             }

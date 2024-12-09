@@ -27,7 +27,7 @@ const deleteMessage = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const messageId = req.params.id
         const selectedMessage = await MessageModel.findByIdAndDelete(messageId)
-        if(!selectedMessage){
+        if (!selectedMessage) {
             res.status(404).json({ error: 'Message does not exist' })
             return
         }
@@ -43,8 +43,8 @@ const editMessage = async (req: Request<{ id: string }>, res: Response) => {
     try {
         const messageId = req.params.id
         const { message } = req.body
-        const selectedMessage = await MessageModel.findByIdAndUpdate(messageId, {message}, { new: true })
-        if(!selectedMessage){
+        const selectedMessage = await MessageModel.findByIdAndUpdate(messageId, { message }, { new: true })
+        if (!selectedMessage) {
             res.status(404).json({ error: 'Message does not exist' })
             return
         }
