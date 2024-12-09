@@ -48,7 +48,7 @@ const editMessage = async (req: Request<{ id: string }>, res: Response) => {
             res.status(404).json({ error: 'Message does not exist' })
             return
         }
-        res.status(200).json({ message: 'Edit message successfully!', selectedMessage })
+        res.status(200).json({ message: 'Edit message successfully!', updatedMessage: selectedMessage.message })
     } catch (error) {
         console.error(error)
         res.status(500).json({ error: `Error to edit message.` })

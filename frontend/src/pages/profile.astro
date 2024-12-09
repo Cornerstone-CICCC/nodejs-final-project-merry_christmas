@@ -150,14 +150,12 @@ import Header2 from "./partials/header2.astro"
                 if(message.fromUserId === userInfo._id){
                     ornament.addEventListener("click", () => {
                         const ornamentModal = document.createElement("div")
-                        // overlay.classList.remove("hidden")
                         
                         ornamentModal.classList.add("overlay")
-                        // const newModalContent = document.createElement("div")
                         ornamentModal.innerHTML = `
                             <div class="modal">
-                                <button class="close">X</button>
-                                <h3>Message from: ${message.fromUserId}</h3>
+                                <button class="close"></button>
+                                <h3 class="message-title">Message from: ${message.fromUserId}</h3>
                                 <p class="description">${message.message}</p>
                                 <button class="edit">edit</button>
                                 <form class="edit-form hidden">
@@ -208,7 +206,7 @@ import Header2 from "./partials/header2.astro"
                                         "Content-Type": "application/json"
                                     }, 
                                     body: JSON.stringify({
-                                        message: value
+                                        message: formData.get("content")
                                     })
                                 })
                                 console.log(formData.get("content"))

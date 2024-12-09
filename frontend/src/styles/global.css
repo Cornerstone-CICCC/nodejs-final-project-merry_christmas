@@ -72,3 +72,21 @@ button:hover{
     text-align: justify;
     border-radius: 10px;
 }
+
+.close{
+    background-image: url(assets/close.png);
+    height: 30px;
+    width: 30px;
+    border: none;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.message-title{
+    
+}
