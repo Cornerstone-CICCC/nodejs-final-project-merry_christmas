@@ -27,6 +27,7 @@ exports.MessageModel = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const MessageSchema = new mongoose_1.default.Schema({
     fromUserId: { type: mongoose_1.Types.ObjectId, required: true, ref: 'User' },
+    username: { type: String, required: true },
     message: { type: String, required: true },
     tree: { type: String, required: true },
 }, { timestamps: true });

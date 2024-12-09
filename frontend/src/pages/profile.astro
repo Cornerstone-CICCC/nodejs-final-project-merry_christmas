@@ -10,7 +10,7 @@
     <title>Profile</title>
   </head>
   <body>
-    <div class="user-profile">
+    <div class="container user-profile">
       <h1 id="profileTitle">Hello, $user!</h1>
       <div class="cover"></div>
       <h4>Enter any room and decorate!</h4>
@@ -38,6 +38,15 @@
       </form>
     </div>
 
+    <div class="editModule hidden">
+      <form>
+        <button id="closeEditModule"> X </button>
+        <label>Edit Message:</label>
+        <input type="text" name="editMessage" id="editMessage" required />
+        <button id="editComplete">OK!</button>
+      </form>
+    </div>
+
     <script type="module">
       import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
       const socket = io("http://localhost:3000");
@@ -59,11 +68,10 @@
 
           const data = await res.json();
           userProfileData = data;
-          console.log(userProfileData);
 
           const profileTitle = document.querySelector("#profileTitle");
           profileTitle.innerText = `Hello, ${data.username} `;
-          document.querySelector(".container").classList.toggle("hidden");
+          document.querySelector(".container").classList.remove("hidden");
 
           return userProfileData;
         } catch (err) {
@@ -78,6 +86,7 @@
       const messageList = document.querySelector("#messageList");
       const addMessageModule = document.querySelector(".addMessageModule");
       const messageForm = document.querySelector("#messageForm");
+      const editModule = document.querySelector(".editModule");
       let currentRoom;
 
       //Open Message Tree
@@ -106,12 +115,10 @@
 
         socket.emit("sendMessage", {
           fromUserId: userProfileData._id,
+          username: userProfileData.username,
           message: messageInput.value.trim(),
           tree: currentRoom,
         });
-        console.log(
-          `fromUser:${userProfileData.username}-${userProfileData._id},message:${messageInput.value.trim()},tree:${currentRoom}`
-        );
         addMessageModule.classList.add("hidden");
         messageInput.value = "";
       });
@@ -120,28 +127,100 @@
       socket.on("newMessage", (showMessage) => {
         if (showMessage.tree === currentRoom || !showMessage.tree) {
           const li = document.createElement("li");
-          li.innerHTML = `<strong>${showMessage.fromUsername}</strong>: ${showMessage.message} <span><button class='deleteBtn'>delete</button><button class='editBtn'>Edit</button></span>`;
+          li.setAttribute("data-id", showMessage._id);
+          li.setAttribute("user-id", showMessage.fromUserId);
 
-          //deleteBtn
-          //const deleteBtn = li.querySelector(".deleteBtn");
-
-          //editBtn
+          li.innerHTML = `
+          <div class="liModule">
+            <p>
+              <strong>${showMessage.username}</strong>: ${showMessage.message}
+            </p>
+            <button class="deleteBtn">delete</button>
+            <button class="editBtn">Edit</button>
+          </div>`;
 
           messageList.append(li);
         }
       });
 
-      // Send Delete request to server
+      // Delete
       messageList.addEventListener("click", (e) => {
+        //get Id from selected list
         if (e.target.classList.contains("deleteBtn")) {
-          //socket send
-          const li = e.target.closet("li");
-          li.querySelector("strong");
-          socket.emit("deleteRequest");
+          const li = e.target.closest("li");
+          const messageId = li.getAttribute("data-id");
+          const userId = li.getAttribute("user-id");
+
+          if (userProfileData._id !== userId) {
+            console.log(userProfileData._id, userId);
+            alert(`User not allow to delete this message.`);
+            return;
+          }
+
+          //socket send and listen
+          socket.emit("deleteRequest", { id: messageId });
+          socket.on("deleteComplete", () => {
+            li.remove();
+            editModule.classList.add("hidden");
+          });
         }
       });
 
-      //
+      // Edit
+      messageList.addEventListener("click", (e) => {
+        //get Id from selected list
+        if (e.target.classList.contains("editBtn")) {
+          const li = e.target.closest("li");
+          const messageId = li.getAttribute("data-id");
+          const userId = li.getAttribute("user-id");
+          const editInput = editModule.querySelector("#editMessage");
+
+          if (userProfileData._id !== userId) {
+            console.log(userProfileData._id, userId);
+            alert(`User not allow to delete this message.`);
+            return;
+          }
+
+          // get Message by data-id
+          socket.emit("getMessageById", { id: messageId });
+          socket.on("messageById", (data) => {
+            editInput.value = data.message;
+          });
+
+          //open edit Module
+          editModule.classList.remove("hidden");
+
+          //closeBtn
+          editModule
+            .querySelector("#closeEditModule")
+            .addEventListener("click", (e) => {
+              e.preventDefault();
+              editModule.classList.add("hidden");
+              editInput.value = "";
+            });
+
+          //Submit
+          editModule.querySelector("form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            //socket send and listen
+            socket.emit("editRequestById", {
+              id: messageId,
+              message: editInput.value.trim(),
+            });
+            socket.on("editComplete", (updatedMessage) => {
+              li.innerHTML = `
+                <div class="liModule">
+                  <p>
+                    <strong>${updatedMessage.username}</strong>: ${updatedMessage.message}
+                  </p>
+                  <button class="deleteBtn">delete</button>
+                  <button class="editBtn">Edit</button>
+                </div>`;
+              editModule.classList.add("hidden");
+            });
+          });
+        }
+      });
 
       //Load Room(tree)-Messages from DataBase
       const fetchMessagesByRoom = async (selectedRoom) => {
@@ -169,8 +248,17 @@
 
         newMessageList.forEach((list) => {
           const li = document.createElement("li");
-          li.innerHTML = `<strong>${list.username}</strong>: ${list.message}<span><button class='deleteBtn'>delete</button></span>`;
-          messageList.prepend(li);
+          li.setAttribute("data-id", list._id);
+          li.innerHTML = `
+          <div class="liModule">
+            <p>
+              <strong>${list.username}</strong>: ${list.message}
+            </p>
+            <button class="deleteBtn">delete</button>
+            <button class="editBtn">Edit</button>
+          </div>`;
+
+          messageList.append(li);
         });
       };
 
@@ -222,5 +310,10 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+  }
+
+  .liModule {
+    display: block;
+    border: 1px solid black;
   }
 </style>

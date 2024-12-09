@@ -32,8 +32,8 @@ const getMessagesByTree = (req, res) => __awaiter(void 0, void 0, void 0, functi
 const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messageId = req.params.messageId;
-        const selectedMessage = yield message_model_1.MessageModel.findByIdAndDelete({ messageId });
-        res.status(200).json({ message: 'delete message successfully!', selectedMessage });
+        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate({ messageId });
+        res.status(200).json({ message: 'Edit message successfully!', selectedMessage });
     }
     catch (error) {
         res.status(500).json({ error: `Error to edit message.` });
@@ -42,8 +42,8 @@ const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 const deleteMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const messageId = req.params.messageId;
-        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate({ messageId });
-        res.status(200).json({ message: 'Edit message successfully!', selectedMessage });
+        const selectedMessage = yield message_model_1.MessageModel.findByIdAndDelete({ messageId });
+        res.status(200).json({ message: 'Delete message successfully!', selectedMessage });
     }
     catch (error) {
         res.status(500).json({ error: `Error to delete message.` });

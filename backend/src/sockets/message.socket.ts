@@ -13,25 +13,11 @@ const socket = (io: Server) => {
 
         //addMessage event
         socket.on('sendMessage', async (data) => {
-            const { fromUserId, message, tree } = data
-            const listenMessage = new MessageModel({ fromUserId, message, tree })
-            console.log(`listenMessage! ${listenMessage}`)
-            await listenMessage.save()
-
-
             try {
-                const userId = new mongoose.Types.ObjectId(fromUserId);
-                const user = await UserModel.findById(userId).select('username');
-                if (!user) {
-                    console.error('User not found');
-                    return;
-                }
-                console.log(`found User! ${user}`)
-                const fromUsername = user.username
-
-                const showMessage = ({ fromUsername, message, tree })
-                console.log(`showMessage! ${showMessage}`)
-
+                const { fromUserId, message, tree, username } = data
+                const showMessage = new MessageModel({ fromUserId, username, message, tree })
+                console.log(`listenMessage! ${showMessage}`)
+                await showMessage.save()
                 io.emit('newMessage', showMessage)
 
             } catch (error) {
@@ -39,9 +25,45 @@ const socket = (io: Server) => {
             }
         })
 
-        //editMessage
+        //get & Send Message by ID
+        socket.on('getMessageById', async (data) => {
+            try {
+                const { id } = data
+                const selectedMessage = await MessageModel.findById(id)
+                if (selectedMessage) {
+                    socket.emit('messageById', { message: selectedMessage.message })
+                }
+            } catch (error) {
+                console.log('Error getting Message', error)
+            }
+        })
 
-        //deleteMessage
+        //edit Message
+        socket.on('editRequestById', async (data) => {
+            try {
+                const { id, message } = data
+                const updatedMessage = await MessageModel.findByIdAndUpdate(id, { message }, { new: true })
+                if (updatedMessage) {
+                    socket.emit('editComplete', updatedMessage)
+                } else {
+                    console.log('Message not found');
+                }
+            } catch (error) {
+                console.log('Error editing Message', error)
+            }
+        })
+
+        //delete Message
+        socket.on('deleteRequest', async (data) => {
+            try {
+                const { id } = data
+                await MessageModel.findByIdAndDelete(id)
+                io.emit('deleteComplete', { id })
+            } catch (error) {
+                console.log('Error deleting Message', error)
+            }
+
+        })
 
 
         //disconnect

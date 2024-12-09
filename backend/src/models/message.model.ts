@@ -9,6 +9,7 @@ export interface IMessage extends Document {
 const MessageSchema = new mongoose.Schema(
     {
         fromUserId: { type: Types.ObjectId, required: true, ref: 'User' },
+        username: { type: String, required: true },
         message: { type: String, required: true },
         tree: { type: String, required: true },
     },

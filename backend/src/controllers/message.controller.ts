@@ -25,8 +25,8 @@ const getMessagesByTree = async (req: Request<{ tree: string }>, res: Response) 
 const editMessage = async (req: Request<{ messageId: string }>, res: Response) => {
     try {
         const messageId = req.params.messageId
-        const selectedMessage = await MessageModel.findByIdAndDelete({ messageId })
-        res.status(200).json({ message: 'delete message successfully!', selectedMessage })
+        const selectedMessage = await MessageModel.findByIdAndUpdate({ messageId })
+        res.status(200).json({ message: 'Edit message successfully!', selectedMessage })
 
     } catch (error) {
         res.status(500).json({ error: `Error to edit message.` })
@@ -36,8 +36,8 @@ const editMessage = async (req: Request<{ messageId: string }>, res: Response) =
 const deleteMessage = async (req: Request<{ messageId: string }>, res: Response) => {
     try {
         const messageId = req.params.messageId
-        const selectedMessage = await MessageModel.findByIdAndUpdate({ messageId })
-        res.status(200).json({ message: 'Edit message successfully!', selectedMessage })
+        const selectedMessage = await MessageModel.findByIdAndDelete({ messageId })
+        res.status(200).json({ message: 'Delete message successfully!', selectedMessage })
     } catch (error) {
         res.status(500).json({ error: `Error to delete message.` })
     }
