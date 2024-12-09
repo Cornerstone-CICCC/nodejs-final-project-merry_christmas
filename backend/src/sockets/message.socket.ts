@@ -13,6 +13,10 @@ const socket = (io: Server) => {
         //addMessage event
         socket.on('sendMessage', async (data) => {
             const { fromUserId, message, tree } = data
+            const listenMessage = new MessageModel({ fromUserId, message, tree })
+            console.log(`listenMessage! ${listenMessage}`)
+            await listenMessage.save()
+
 
             try {
                 const userId = new mongoose.Types.ObjectId(fromUserId);
@@ -24,8 +28,9 @@ const socket = (io: Server) => {
                 console.log(`found User! ${user}`)
                 const fromUsername = user.username
 
-                const showMessage = new MessageModel({ fromUsername, message, tree })
-                await showMessage.save()
+                const showMessage = ({ fromUsername, message, tree })
+                console.log(`showMessage! ${showMessage}`)
+
                 io.emit('newMessage', showMessage)
 
             } catch (error) {

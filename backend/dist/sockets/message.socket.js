@@ -20,8 +20,11 @@ const socket = (io) => {
         //connect
         console.log(`User Connected:${socket.id}`);
         //addMessage event
-        socket.on('addMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        socket.on('sendMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
             const { fromUserId, message, tree } = data;
+            const listenMessage = new message_model_1.MessageModel({ fromUserId, message, tree });
+            console.log(`listenMessage! ${listenMessage}`);
+            yield listenMessage.save();
             try {
                 const userId = new mongoose_1.default.Types.ObjectId(fromUserId);
                 const user = yield user_model_1.UserModel.findById(userId).select('username');
@@ -31,8 +34,8 @@ const socket = (io) => {
                 }
                 console.log(`found User! ${user}`);
                 const fromUsername = user.username;
-                const showMessage = new message_model_1.MessageModel({ fromUsername, message, tree });
-                yield showMessage.save();
+                const showMessage = ({ fromUsername, message, tree });
+                console.log(`showMessage! ${showMessage}`);
                 io.emit('newMessage', showMessage);
             }
             catch (error) {
