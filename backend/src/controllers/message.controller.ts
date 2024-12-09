@@ -22,24 +22,36 @@ const getMessagesByTree = async (req: Request<{ tree: string }>, res: Response) 
     }
 }
 
-const deleteMessage = async (req: Request<{ messageId: string }>, res: Response) => {
+const deleteMessage = async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const messageId = req.params.messageId
-        const selectedMessage = await MessageModel.findByIdAndDelete({ messageId })
-        res.status(200).json({ message: 'delete message successfully!', selectedMessage })
+        const messageId = req.params.id
+        const selectedMessage = await MessageModel.findByIdAndDelete(messageId)
+        if(!selectedMessage){
+            console.log('meesage does not exist')
+            res.status(404).json({ error: 'Message does not exist' })
+            return
+        }
+        res.status(200).json({ message: 'delete message successfully!' })
 
     } catch (error) {
-        res.status(500).json({ error: `Error to edit message.` })
+        console.error(error)
+        res.status(500).json({ error: `Error to delete message.` })
     }
 }
 
-const editMessage = async (req: Request<{ messageId: string }>, res: Response) => {
+const editMessage = async (req: Request<{ id: string }>, res: Response) => {
     try {
-        const messageId = req.params.messageId
-        const selectedMessage = await MessageModel.findByIdAndUpdate({ messageId })
-        res.status(200).json({ message: 'Edit message successfully!', selectedMessage })
+        const messageId = req.params.id
+        const selectedMessage = await MessageModel.findByIdAndUpdate(messageId)
+        if(!selectedMessage){
+            console.log('meesage does not exist')
+            res.status(404).json({ error: 'Message does not exist' })
+            return
+        }
+        res.status(200).json({ message: 'Edit message successfully!' })
     } catch (error) {
-        res.status(500).json({ error: `Error to delete message.` })
+        console.error(error)
+        res.status(500).json({ error: `Error to edit message.` })
     }
 }
 
@@ -47,7 +59,7 @@ const deleteTree = async (req: Request<{ tree: string }>, res: Response) => {
     try {
         const selectedTree = req.params.tree
         const selectedMessages = await MessageModel.deleteMany({ tree: selectedTree })
-
+        res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
         res.status(500).json({ error: `Error to delete tree.` })
     }

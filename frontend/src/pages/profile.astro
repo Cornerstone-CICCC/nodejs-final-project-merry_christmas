@@ -165,17 +165,16 @@ import "../styles/global.css"
 
                         deleteBtn.addEventListener("click", async() => {
                             console.log(message._id)
-                            const res = await fetch(`http:/localhost:3000/api/msTree/message/${message._id}`, {
+                            const res = await fetch(`http://localhost:3000/api/msTree/delete/${message._id}`, {
                                 method: "DELETE", 
                                 credentials: "include"
                             })
                             const data = await res.json()
                             console.log(data)
-                            if(!res.ok){
-                                console.log(data.error)    
+                            if(res.ok){
+                                ornament.remove()
+                                overlay.classList.add("hidden")  
                             }
-                            ornament.remove()
-                            overlay.classList.add("hidden")
                         })
                     })
                     
@@ -224,6 +223,12 @@ import "../styles/global.css"
         })
         //open modal 
         addMsg.addEventListener("click", () => {
+            modalContent.innerHTML = `
+                <form class="msg-form" action="">
+                    <textarea required class="message" id="message" placeholder="Your message goes here"></textarea>
+                    <button class="submit-btn" type="submit">Decorate!</button>
+                </form>
+            `
             overlay.classList.remove("hidden")
         })
 

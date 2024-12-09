@@ -31,28 +31,41 @@ const getMessagesByTree = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 const deleteMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const messageId = req.params.messageId;
-        const selectedMessage = yield message_model_1.MessageModel.findByIdAndDelete({ messageId });
-        res.status(200).json({ message: 'delete message successfully!', selectedMessage });
+        const messageId = req.params.id;
+        const selectedMessage = yield message_model_1.MessageModel.findByIdAndDelete(messageId);
+        if (!selectedMessage) {
+            console.log('meesage does not exist');
+            res.status(404).json({ error: 'Message does not exist' });
+            return;
+        }
+        res.status(200).json({ message: 'delete message successfully!' });
     }
     catch (error) {
-        res.status(500).json({ error: `Error to edit message.` });
+        console.error(error);
+        res.status(500).json({ error: `Error to delete message.` });
     }
 });
 const editMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const messageId = req.params.messageId;
-        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate({ messageId });
-        res.status(200).json({ message: 'Edit message successfully!', selectedMessage });
+        const messageId = req.params.id;
+        const selectedMessage = yield message_model_1.MessageModel.findByIdAndUpdate(messageId);
+        if (!selectedMessage) {
+            console.log('meesage does not exist');
+            res.status(404).json({ error: 'Message does not exist' });
+            return;
+        }
+        res.status(200).json({ message: 'Edit message successfully!' });
     }
     catch (error) {
-        res.status(500).json({ error: `Error to delete message.` });
+        console.error(error);
+        res.status(500).json({ error: `Error to edit message.` });
     }
 });
 const deleteTree = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const selectedTree = req.params.tree;
         const selectedMessages = yield message_model_1.MessageModel.deleteMany({ tree: selectedTree });
+        res.status(200).json({ message: 'Deleted successfully' });
     }
     catch (error) {
         res.status(500).json({ error: `Error to delete tree.` });

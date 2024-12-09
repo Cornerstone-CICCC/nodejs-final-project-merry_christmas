@@ -9,6 +9,6 @@ const messageRouter = express_1.default.Router();
 messageRouter.get('/', message_controller_1.default.getAllMessages);
 messageRouter.get('/tree/:tree', message_controller_1.default.getMessagesByTree);
 messageRouter.delete('/tree/:tree', message_controller_1.default.deleteTree);
-messageRouter.put('/message/:id', message_controller_1.default.editMessage);
-messageRouter.delete('/message/:id', message_controller_1.default.deleteMessage);
+messageRouter.put('/update/:id', message_controller_1.default.editMessage);
+messageRouter.delete('/delete/:id', message_controller_1.default.deleteMessage);
 exports.default = messageRouter;
