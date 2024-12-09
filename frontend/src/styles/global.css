@@ -72,3 +72,18 @@ button:hover{
     text-align: justify;
     border-radius: 10px;
 }
+
+button {
+    width: 170px;
+    height: 42px;
+    background: #c12d2d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 40px;
+    border: none;
+    color: white;
+    margin: 0 auto;
+    font-weight: bold;
+  }

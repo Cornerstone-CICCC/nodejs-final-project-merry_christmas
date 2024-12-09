@@ -10,9 +10,9 @@ const socket = (io: Server) => {
 
         //addMessage event
         socket.on('addMessage', async (data) => {
-            const { fromUserId, message, tree } = data
+            const { fromUserId, username, message, tree } = data
             try {
-                const newMessage = new MessageModel({ fromUserId, message, tree })
+                const newMessage = new MessageModel({ fromUserId, username, message, tree })
                 await newMessage.save()
                 io.emit('newMessage', newMessage)
             } catch (error) {
@@ -24,9 +24,9 @@ const socket = (io: Server) => {
             socket.join(data.tree)
 
             io.to(data.tree).emit('newMessage', {
-                username: 'System', 
+                username: 'System',
                 message: `${data.username} joined the room ${data.tree}`,
-                tree: data.tree, 
+                tree: data.tree,
             })
         })
 
@@ -34,8 +34,8 @@ const socket = (io: Server) => {
             socket.leave(data.tree)
 
             io.to(data.tree).emit('newMessage', {
-                username: 'System', 
-                tree: data.tree, 
+                username: 'System',
+                tree: data.tree,
                 message: `${data.username}, has left the room ${data.tree}`
             })
         })
