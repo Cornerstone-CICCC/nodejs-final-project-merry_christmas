@@ -154,14 +154,21 @@ import "../styles/global.css"
                         // const newModalContent = document.createElement("div")
                         modalContent.innerHTML = `
                             <h3>Message from: ${message.fromUserId}</h3>
+                            <p class="description">${message.message}</p>
                             <button class="edit">edit</button>
-                            <textarea class="hidden"></textarea>
-                            <p>${message.message}</p>
+                            <form class="edit-form hidden">
+                                <textarea name="content" id="content" class="input"></textarea>
+                                <button type="submit">Edit this</button>
+                            </form>
                             <button class="delete">delete</button>
                         `
                         // modal.appendChild(newModalContent)
                         const editBtn = modalContent.querySelector(".edit")
                         const deleteBtn = modalContent.querySelector(".delete")
+                        const editInput = modalContent.querySelector(".input")
+                        const messageDescription = modalContent.querySelector(".description")
+                        const editForm = modalContent.querySelector(".edit-form")
+                        const submitBtn = modalContent.querySelector(".submit")
 
                         deleteBtn.addEventListener("click", async() => {
                             console.log(message._id)
@@ -175,6 +182,33 @@ import "../styles/global.css"
                                 ornament.remove()
                                 overlay.classList.add("hidden")  
                             }
+                        })
+
+                        editBtn.addEventListener("click", async() => {
+                            editBtn.classList.add("hidden")
+                            messageDescription.classList.add("hidden")
+                            editForm.classList.remove("hidden")
+
+                            editForm.addEventListener("submit", async(e) => {
+                                e.preventDefault()
+                                const formData = new FormData(editForm)
+                                const res= await fetch(`http://localhost:3000/api/msTree/update/${message._id}`, {
+                                    method: "PUT", 
+                                    credentials: "include", 
+                                    header: {
+                                        "Content-Type": "application/json"
+                                    }, 
+                                    body: ({
+                                        message: formData.get("content")
+                                    })
+                                })
+                                const data = await res.json()
+                                console.log(data)
+                                console.log(message.message)
+                                // if(res.ok){
+                                //     overlay.classList.add("hidden") 
+                                // }
+                            })
                         })
                     })
                     

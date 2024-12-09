@@ -1,7 +1,9 @@
 .ornament-img{
     max-width: 50px;
 }
-
+.hidden{
+    display: none;
+}
 .ornament{
     border-radius: 50%;
     width: 60px;
