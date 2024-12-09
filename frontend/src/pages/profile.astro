@@ -1,5 +1,5 @@
 ---
-
+import "./styles/global.css";
 ---
 
 <html lang="en">
@@ -25,7 +25,11 @@
       <ul id="messageList"></ul>
     </div>
 
-    <div class="addMessageModule hidden">
+    <div class="addMessageModule module hidden">
+      <div class="module-head">
+        <button id="closeAddModule"> X </button>
+      </div>
+
       <form id="messageForm">
         <input
           id="messageInput"
@@ -38,9 +42,12 @@
       </form>
     </div>
 
-    <div class="editModule hidden">
-      <form>
+    <div class="editModule module hidden">
+      <div class="module-head">
         <button id="closeEditModule"> X </button>
+      </div>
+
+      <form>
         <label>Edit Message:</label>
         <input type="text" name="editMessage" id="editMessage" required />
         <button id="editComplete">OK!</button>
@@ -108,6 +115,14 @@
         addMessageModule.classList.remove("hidden");
       });
 
+      // Close "Add Message Module"
+      const closeAddModuleBtn =
+        addMessageModule.querySelector("#closeAddModule");
+      closeAddModuleBtn.addEventListener("click", () => {
+        addMessageModule.classList.add("hidden");
+        document.querySelector("#messageInput").value = "";
+      });
+
       //send Message to server
       messageForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -131,12 +146,14 @@
           li.setAttribute("user-id", showMessage.fromUserId);
 
           li.innerHTML = `
-          <div class="liModule">
+          <div class="modal">
+          <div class="liModule modal-content">
             <p>
               <strong>${showMessage.username}</strong>: ${showMessage.message}
             </p>
             <button class="deleteBtn">delete</button>
             <button class="editBtn">Edit</button>
+          </div>
           </div>`;
 
           messageList.append(li);
@@ -209,12 +226,14 @@
             });
             socket.on("editComplete", (updatedMessage) => {
               li.innerHTML = `
-                <div class="liModule">
+                <div class="modal">
+                <div class="liModule modal-content">
                   <p>
                     <strong>${updatedMessage.username}</strong>: ${updatedMessage.message}
                   </p>
                   <button class="deleteBtn">delete</button>
                   <button class="editBtn">Edit</button>
+                </div>
                 </div>`;
               editModule.classList.add("hidden");
             });
@@ -249,13 +268,17 @@
         newMessageList.forEach((list) => {
           const li = document.createElement("li");
           li.setAttribute("data-id", list._id);
+          li.setAttribute("user-id", list.fromUserId);
+
           li.innerHTML = `
-          <div class="liModule">
+          <div class="modal">
+          <div class="liModule modal-content">
             <p>
               <strong>${list.username}</strong>: ${list.message}
             </p>
             <button class="deleteBtn">delete</button>
             <button class="editBtn">Edit</button>
+          </div>
           </div>`;
 
           messageList.append(li);
@@ -312,8 +335,16 @@
     background-size: cover;
   }
 
-  .liModule {
-    display: block;
-    border: 1px solid black;
+  .modal {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 1rem;
+    max-width: 350px;
+    width: 100%;
+    padding: 2rem;
+    background-color: white;
+    text-align: justify;
+    border-radius: 10px;
   }
 </style>
