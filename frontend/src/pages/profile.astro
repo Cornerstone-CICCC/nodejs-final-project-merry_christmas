@@ -67,6 +67,7 @@ import Header2 from "./partials/header2.astro"
         const tree = document.querySelector(".tree")
         const userProfile = document.querySelector(".user-profile") 
         const backToProfile = document.querySelector(".profile") 
+        const burgerMenu = document.querySelector(".burger-menu")
         const modal = document.querySelector(".modal")
         const modalContent = document.querySelector(".modal-content")
 
@@ -279,6 +280,7 @@ import Header2 from "./partials/header2.astro"
             tree.classList.add("hidden")
             userProfile.classList.remove("hidden")
             navUl.style.right = "-200px"
+            burgerMenu.style.display = "block"
         })
 
         //load profile 
