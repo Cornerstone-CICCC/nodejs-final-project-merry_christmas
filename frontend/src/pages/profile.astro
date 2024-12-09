@@ -112,13 +112,13 @@ import Header2 from "./partials/header2.astro";
       return data;
     };
     //fetch user info by id
-    const fetchUserInfoById = async (id) => {
-      const res = await fetch(`http://localhost:3000/user/profile/${id}`, {
-        credentials: "include",
-      });
-      const data = await res.json();
-      return data;
-    };
+    // const fetchUserInfoById = async (id) => {
+    //   const res = await fetch(`http://localhost:3000/user/profile/${id}`, {
+    //     credentials: "include",
+    //   });
+    //   const data = await res.json();
+    //   return data;
+    // };
 
     //fetch messages created by each tree
     const fetchMessagesByRoom = async (tree) => {
@@ -227,6 +227,8 @@ import Header2 from "./partials/header2.astro";
 
                 if (res.ok) {
                   const data = await res.json();
+                //   overlay.classList.add("hidden")
+                  ornamentModal.remove();
                   //console.log("Updated Message-fe:", data.updatedMessage);
                   message.message = data.updatedMessage;
                 }
@@ -239,12 +241,21 @@ import Header2 from "./partials/header2.astro";
           });
         } else {
           ornament.addEventListener("click", () => {
-            overlay.classList.remove("hidden");
+            const notMessageUserModal = document.createElement("div")
+            notMessageUserModal.classList.add("overlay")
+            notMessageUserModal.innerHTML = `
+                <div class="modal">
+                    <button class="close2"></button>
+                    <h3>Message from: ${message.username}</h3>
+                    <p>${message.message}</p>
+                </div>
+            `
+            container.appendChild(notMessageUserModal)
+            const btnClose2 = notMessageUserModal.querySelector(".close2")
 
-            modalContent.innerHTML = `
-                        <h3>Message from: ${message.username}</h3>
-                        <p>${message.message}</p>
-                    `;
+            btnClose2.addEventListener("click", () => {
+                notMessageUserModal.remove()
+            })
           });
         }
       });
